@@ -1,0 +1,32 @@
+digraph G {
+
+rankdir=LR;
+
+"Pipeline 1" [shape=diamond, height=1];
+"Pipeline 2" [shape=diamond, height=1];
+
+"Algo 1" -> "Model 1" [style=dashed];
+"Algo 2" -> "Model 2" [style=dashed];
+"Algo 1" -> "Model 3" [style=dashed];
+"Algo 3" -> "Model 4" [style=dashed];
+
+"Model 1" [shape=square];
+"Model 2" [shape=square];
+"Model 3" [shape=square];
+"Model 4" [shape=square];
+
+"Pipeline 1" -> "Algo 1";
+"Pipeline 1" -> "Model 1";
+"Pipeline 1" -> "Algo 2";
+"Pipeline 1" -> "Model 2";
+
+"Pipeline 2" -> "Algo 1";
+"Pipeline 2" -> "Model 3";
+"Pipeline 2" -> "Algo 3";
+"Pipeline 2" -> "Model 4";
+
+#"ModelProxy" [shape=doublecircle, height=0.5];
+#"Pipeline 1" -> "ModelProxy";
+#"Pipeline 2" -> "ModelProxy";
+
+}
