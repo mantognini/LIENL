@@ -5,7 +5,11 @@
     <groupId>ch.epfl.lienl.experimental.packaging.C.mygroup</groupId>
     <artifactId>using.algo.with.model.ADA</artifactId>
     <version>0.1</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>../algo</module>
+    </modules>
 
     <dependencies>
         <dependency>
