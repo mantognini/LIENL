@@ -1,11 +1,31 @@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% General TODO:
+%  - fix images' size
+%  - improve style of code/identifier 
+%  - references / bibliography
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass{article}
 
 \usepackage{graphicx}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
+
+%%%
+% Commands
+
 \newcommand{\id}[1]{\mbox{\textit{#1}}}
 
+\newcommand{\TODO}[1]{\textcolor{YellowOrange}{(#1)}} % for inline TODO
+
+%
+%%%
 
 \title{Large-scale Information Extraction from Neuroscientific Literature}
 \date{Spring 2015}
@@ -28,10 +48,14 @@ Artificial Intelligence Laboratory LIA - EPFL
 \tableofcontents
 \newpage
 
-
 \section{Introduction}
 
-TODO describe bluima and sherlok and the context.
+TODO:
+ - describe bluima (UIMA, annotators, resource, challenges, ...)
+ - sherlok (very quickly, more below) 
+ - and the context.
+ - work priority (fully pipeline for Brain regions NER and connections extractor)
+
 
 
 \section{Packaging}
@@ -41,6 +65,8 @@ One of the first objective of this project was the disassociation of algorithms 
 The main idea is to store a set of resources, such as dataset trained on a specific corpus of texts, in a jar file and access them in read-only mode at runtime. Package dependencies can be used to ensure that some files are available at runtime and ideally package version should be used to let the user update resources independently of the algorithms.
 
 Here we describe three alternatives -- namely A, B and C -- that we considered before deciding on a fourth variant. Below, \id{ada} and \id{bob} denote two variants of a kind of resource that are compatible with a common algorithm package, denoted \id{algo}. The \id{using*} packages can be thought as pipelines in the context of bluima/sherlok.
+
+TODO: add general limitation of package : no File -> InputStream to resources. Hence annotator have to be updated accordingly
 
 \subsection{Version A}
 
@@ -83,7 +109,7 @@ The third version we studied is the most simple one: as illustrated on Figure \r
 \end{figure}
 
 
-\subsection{Conclusion}
+\subsection{The verdict - Version D}
 
 After exploring possibilities offered by the Maven packaging system we analysed how resources and engines are related to each others and used by pipelines in bluima. Figure \ref{fig:pkgsysD} depicts those relations. It was also considered that repackaging is an acceptable cost to swap models. The most important point was avoiding at all cost to package an exponentially huge number of pipelines to match each and every possible combinations and for this reason version C was discarded.
 
@@ -91,12 +117,58 @@ We also reflected on the structure of the algorithm, especially on their input a
 
 Finally, in order to centralise code and simplify loading resources we introduce \id{ModelProxy}, a utility class used by pipelines that, given a string representing class name, open a stream to a given file inside the class' jar archive.
 
+TODO: add comment that the name of the file should be available from the stream for further processing (e.g. unzip) hence ModelStream.
+
 \begin{figure}
 \centering
 \includegraphics{res/packaging_version_D.png}
 \caption{Packaging Version D}
 \label{fig:pkgsysD}
 \end{figure}
+
+
+\section{Restructuring bluima}
+
+Now that the packaging strategy for annotators and their resources has been designed we can actually apply it. It was decided to start with a relatively easy annotator -- namely \id{SentenceAnnotator} which is part of OpenNLP -- to make sure our previous decision was indeed viable. The approach was based on an iterative process that can be applied to other modules as well. However, let's first take a step back and discuss the file hierarchy and how the different modules are related to each others.
+
+\subsection{File Hierarchy}
+
+TODO:
+- pom.xml hierarchy
+- res/util/modules
+- build procedure / install
+
+\subsection{Case study: converting OpenNLP}
+
+When converting an annotator such as \id{SentenceAnnotator}, the first thing to do is to identify the unit test responsible for its quality. In this case, the annotator was imported from UIMA \TODO{ref} and it was still using the XML engine descriptor \TODO{ref}. Therefore, we first have to make it compatible with the new and compact pipeline runner from uimaFIT \TODO{ref}.
+
+Once the unit tests are properly working, we can move to the generation of the resource packages. Since this phase is completely repetitive, we devised a script to make the developer live less cumbersome: given a resource file, a resource name and a few other technical details we can produce a resource package, as described previously, that is ready to be used with an annotator.
+
+However, since annotators are currently using Java \id{File} object we have to convert them and their dependencies in order to use \id{ModelStream} instead. This usually involves the following steps:
+
+\begin{enumerate}
+
+\item Renaming the \id{PARAM\_MODEL\_FILE} parameter (or any similar properties) of the annotator into \id{PARAM\_MODEL}.
+
+\item Updating its \id{initialize} method to load a \id{ModelStream} through \id{ModelProxy} and the \id{PARAM\_MODEL} parameter. 
+
+\item Updating the annotator's dependencies such that they can be constructed from \id{ModelStream}. Usually this plays well with the current implementation that must at some point use a \id{FileInputStream}. Hence, we can plug in our custom stream in place of the regular \id{FileInputStream} without restructuring the dependencies too much.
+
+\item Updating the dependency list in the annotator's \id{pom.xml} file to reflect any additional resource dependency.
+
+\end{enumerate}
+
+Finally, at this last point the unit test should be updated to use resource package instead of absolute path to the resource file with \id{PARAM\_MODEL}.
+
+This strategy was also applied to convert PoS, Token and Chunk annotator of OpenNLP.
+
+
+\section{Sherlok}
+
+TODO:
+- introduction: REST, pipeline, bundle, ...
+- repackaging challenges: override of jar not automatic in local\_rep
+- how are package fetched
 
 %\newpage
 %\begin{appendix}
