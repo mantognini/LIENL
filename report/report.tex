@@ -4,7 +4,7 @@
 %
 % General TODO:
 %  - fix images' size
-%  - improve style of code/identifier 
+%  - improve style of code/identifier
 %  - references / bibliography
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,7 +37,7 @@
 \maketitle
 
 Master Semester Project under the supervision of:
-Jean-Cédric Chappelier \& 
+Jean-Cédric Chappelier \&
 Renaud Richardet
 Artificial Intelligence Laboratory LIA - EPFL
 
@@ -61,7 +61,7 @@ TODO:
   - What are annotator?
       -> way to annotate some text with metadata
   - Example: SentenceAnnotator
-      -> given a text, we get, roughly, a list of begin/end 
+      -> given a text, we get, roughly, a list of begin/end
          position of the sentences
   - What are pipelines?
       -> way of combining annotators
@@ -71,7 +71,7 @@ TODO:
          easily pipelines in Sherlok
  - Work priority:
       -> master semester project, ~3 months
-      -> full pipeline for Brain regions NER and connections 
+      -> full pipeline for Brain regions NER and connections
          extractor
 \end{verbatim}
 
@@ -103,9 +103,9 @@ TODO:
 TODO:
  - not sure if better before or after §Sherlok...
    will probably decide while writing.
- - UIMA-based, large collection of annotators 
+ - UIMA-based, large collection of annotators
    written in Java
- - currently resources are accessed through a 
+ - currently resources are accessed through a
    system wide variable and all resources have
    to be there to work.
  - contrast with Sherlok "auto-install" feature
@@ -119,7 +119,10 @@ TODO:
 
 \subsection{Packaging}
 
-One of the first objective of this project was the disassociation of algorithms (engine annotators) and their different resources (model files) and devise a packaging system, based on Maven, that would be flexible while being simple and convenient to use and let the user define pipelines using specific annotators and models.
+One of the first objective of this project was the disassociation of algorithms (engine annotators) and their different resources (model files, configuration files) and devise a packaging system, based on Apache Maven, that would be flexible while being simple and convenient to use and let the user define pipelines using specific annotators and models.
+
+\TODO{explain that packages would be released on public repo, and thus making them available}
+\TODO{quickly present DKpro packaging strategy & ant script. Say why we did not go with it.}
 
 The main idea is to store a set of resources, such as dataset trained on a specific corpus of texts, in a jar file and access them in read-only mode at runtime. Package dependencies can be used to ensure that some files are available at runtime and ideally package version should be used to let the user update resources independently of the algorithms.
 
@@ -133,9 +136,9 @@ Here we describe three alternatives that we used to contrast alternative strengt
 
 \subsubsection{Version A}
 
-The first system we analysed spread each algorithm and set of resources into an individual package that depends on \id{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and use the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in figure \ref{fig:pkgsysA}.
+The first system we analysed spread each algorithm and set of resources into individual packages that depends on \id{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in Figure \ref{fig:pkgsysA}.
 
-This system has several positive aspects. First of all, tests can be easily written by specifying potentially multiple resource packages as dependencies with Maven's test scope. Then, \id{modeldep} also defines a clear Java interface to define the contract for models and their versions. Additionally, the proxy system centralises in only one place the utility to load resources and therefore ease maintenance by not involving code duplication in several packages. However, models could not be swapped on the fly since it would involve recompiling and repackaging \id{using\_my\_algo}.  Alternatively, to prevent being modified, \id{using\_my\_algo} could depend on both \id{ada} and \id{bob} packages but this would not be as flexible as we want it to be.
+This system has several positive aspects. First of all, tests can be easily written by specifying potentially multiple resource packages as dependencies with Maven's test scope. Then, \id{modeldep} also defines a clear Java interface to define the contract for models and their versions. Additionally, the proxy system centralises the utility to load resources and therefore eases maintenance by not involving code duplication in several packages. However, models could not be swapped on the fly since it would involve recompiling and repackaging \id{using\_my\_algo}.  Alternatively, to prevent modifications, \id{using\_my\_algo} could depend on both \id{ada} and \id{bob} packages but this would not be as flexible as we want it to be.
 
 \begin{figure}
 \centering
@@ -147,7 +150,7 @@ This system has several positive aspects. First of all, tests can be easily writ
 
 \subsubsection{Version B}
 
-The second approach is based on Maven's version string: an \id{algo} will depend on an abstract \id{model} which provide a mechanism to load a specific file from its jar archive and both \id{ada} and \id{bob} model versions are defined as subversion of \id{model}. For example, if \id{model} is defined as version \id{0.1} then \id{ada} will use the string \id{0.1-ADA} to define its version and the \id{algo} will accept versions in the range $ [0.1,0.2) $.
+The second approach is based on Maven's version string: an \id{algo} will depend on an abstract \id{model} which provide a mechanism to load a specific file from its jar archive and both \id{ada} and \id{bob} model versions are defined as subversion of \id{model}. For example, the convention could be that if \id{model} is defined as version \id{0.1} then \id{ada} will use the string \id{0.1-ADA} to define its version and the \id{algo} will accept versions in the range $ [0.1,0.2) $.
 
 The model actually used will be either specified at compile time (cf. \id{using.algo2}) or be selected at runtime depending on the installed packages (cf. \id{using.algo1}) as depicted on Figure \ref{fig:pkgsysB}. While this offers a great flexibility to the user designing pipelines and allows him to swap models without repackaging anything, it means that test projects cannot ensure the correctness of more than one model version at a time. Moreover, if no specific version is bound to the pipeline, such as with \id{using.algo1}, then there is no strong guarantee that a valid version is available at runtime.
 
@@ -177,7 +180,7 @@ After exploring possibilities offered by the Maven packaging system we analysed 
 
 We also reflected on the structure of the algorithm, especially on their input arguments. We came to the conclusion that, mostly for flexibility, they should accept \id{InputStream}s as input and not be bound to any models. Instead, the pipelines will be in charge to give them the proper resource data streams. Therefore the pipeline will have dependencies toward algorithms and models.
 
-Finally, in order to centralise code and simplify loading resources we introduce \id{ModelProxy}, a utility class used by pipelines that, given a string representing class name, open a stream to a given file inside the class' jar archive.
+Finally, in order to centralise code and simplify loading resources we introduce \id{ModelProxy}, a utility class used by pipelines that, given a \id{String} representing a class name, opens a stream to a given file inside the class' jar archive.
 
 In some cases, when processing the resource as a stream, it can be convenient to have access to its original filename (e.g. when reading a compressed archive). Therefore we encapsulate the name and the stream in a class -- \id{ModelStream} -- that can be seen as a specialised \id{InputStream} with a filename property.
 
@@ -198,7 +201,7 @@ Now that the packaging strategy for annotators and their resources has been desi
 
 \subsubsection{File Hierarchy}
 
-We wanted to create a structured, yet flexible, file hierarchy for the annotators and their resources. Since we are using Maven, we based our design on parent-child relationship in the \id{pom.xml} files: the root pom file, in addition to actually loading its children, defines the main settings, such as the Java version to use or the list of general dependencies, that will be shared with every of its children. Then we have both \path{modules/pom.xml} and \path{resources/pom.xml} that are responsible for loading their own children, that is the different annotators or utilities for the former and the actual resource for the latter.
+We wanted to create a structured, yet flexible, file hierarchy for the annotators and their resources. Since we are using Maven, we based our design on parent-child relationship in the \id{pom.xml} files: the root pom file, in addition to actually loading its children, defines the main settings, such as the Java version to use or the list of general dependencies, that will be shared with every of its children. The root pom file references both modules \path{modules/pom.xml} and \path{resources/pom.xml} that are responsible for loading their own children, that is the different annotators or utilities for the former and the actual resource for the latter.
 
 It follows that when running the install (or test) command on the root Maven project then every algorithms and resources are installed (or tested).
 
@@ -208,13 +211,13 @@ When converting an annotator such as \id{SentenceAnnotator}, the first thing to 
 
 Once the unit tests are properly working, we move on to the generation of the resource packages. Since this phase is completely repetitive, we devised a script \TODO{ref to wiki} to make the developer live less cumbersome: given a resource file, a resource name and a few other technical details we can produce a resource package, as described previously, that is ready to be used with an annotator.
 
-However, since annotators are currently using Java \id{File} object we have to convert them and their dependencies in order to use \id{ModelStream} instead. The following strategy was applied to convert PoS, Token and Chunk annotator of OpenNLP.
+However, many annotators are currently using Java \id{File} parameters, or Java \id{String}s pointing to a local file. Therefore, we have to refactor these annotators and their dependencies in order to use \id{ModelStream} instead. The following strategy was applied to convert PoS, Token and Chunk annotator of OpenNLP:
 
 \begin{enumerate}
 
 \item Renaming the \id{PARAM\_MODEL\_FILE} parameter (or any similar properties) of the annotator into \id{PARAM\_MODEL}.
 
-\item Updating its \id{initialize} method to load a \id{ModelStream} through \id{ModelProxy} and the \id{PARAM\_MODEL} parameter. 
+\item Updating its \id{initialize} method to load a \id{ModelStream} through \id{ModelProxy} and the \id{PARAM\_MODEL} parameter.
 
 \item Updating the annotator's dependencies such that they can be constructed from \id{ModelStream}. Usually this plays well with the current implementation that must at some point use a \id{FileInputStream}. Hence, we can plug in our custom stream in place of the regular \id{FileInputStream} without restructuring the dependencies too much.
 
@@ -236,7 +239,7 @@ Finally, at this last point the unit test should be updated to use resource pack
 
 Currently every single resource file is packaged in a separate jar file and there is a one-to-one mapping between a file and a \id{ModelResource}. Actually, several files can be grouped inside the same jar as long as the corresponding \id{ModelResource} classes are also in the same jar. However, this has several limitations that were either not identified during the design process or, wrongly, not considered as significantly limiting for our use case. The purpose of this proposal is to fix those limitation by proposing a new packaging strategy for resources.
 
-It has been decided that, with \id{ModelResource}, we shall use \id{InputStream} instead of \id{File} and therefore refactor some code in bluima. We initially guessed that this refactoring would in practice not be a large issue because, at some point, we need to read the file -- using \id{FileInputStream} or alike -- and therefore could use a more abstract concept (\id{InputStream} vs \id{File}) without much trouble. Unfortunately, for some annotators this task is actually hard or even impossible. This is particulary true for annotators using external code, where sometime \id{File} or even \id{String} paths to resources are used. For example, the linnaeus annotator is an annotator that wraps the external linnaeus library. This library uses an \id{ArgParser} that cannot be created from a data stream, but requires \TODO{XXX}. Hence, the only working solution that works without refactoring the (external) linnaeus library is to extract the configuration file into a temporary directory and provide the path to this temporary directory to the linnaeus library.
+It has been decided that, with \id{ModelResource}, we shall use \id{InputStream} instead of \id{File} and therefore refactor some code in bluima. We initially guessed that this refactoring would in practice not be a large issue because, at some point, we need to read the file -- using \id{FileInputStream} or alike -- and therefore could use a more abstract concept (\id{InputStream} vs \id{File}) without much trouble. Unfortunately, for some annotators this task is actually hard or even impossible. This is particulary true for annotators using external code, where sometime \id{File} or even \id{String} paths to resources are used. For example, the linnaeus annotator is an annotator that wraps the external Linnaeus library. This library uses an \id{ArgParser} that cannot be created from a data stream, but requires \TODO{XXX}. Hence, the only working solution that works without refactoring the (external) linnaeus library is to extract the configuration file into a temporary directory and provide the path to this temporary directory to the Linnaeus library.
 
 Attempting to convert \id{LinnaeusAnnotator} also highlighted another issue: its main configuration file makes references to some other files with relative paths. The issue here is that with our resource packaging system the files are only accessible through streams via \id{ModelProxy} but not paths.
 
@@ -244,7 +247,7 @@ Here there are two potential solutions:
 
 \begin{itemize}
 
-\item either we completely rewrite liennaeus, since it is a closed source program to support reference to \id{ModelResource} in the configuration files;
+\item either we completely rewrite Linnaeus, since it is a closed source program to support reference to \id{ModelResource} in the configuration files;
 
 \item or we put all the related configuration files in an archive -- say, a tar file -- and extract them in a temporary directory.
 
@@ -252,7 +255,7 @@ Here there are two potential solutions:
 
 Obviously the first solution is not practical within the short time period allocated to this project and not sustainable in the long term, as it would require to fork and constantly update the forked codebase. The second solution, however, could be achieved. It moreover solves (partially) a more general issue discussed below.
 
-Like with \id{LinnaeusAnnotator}, the \id{BrainRegionPipes} uses what we could call a batch of files: a collection of configuration files used to set up an annotator or its dependencies. For the \id{BrainRegionPipes} the problem is easier since no file makes a reference to another one. Nevertheless, it would be very verbose and painful to load each of the ~30 files from its corresponding \id{ModelRessource}. Moreover, with our former approach we would need to add as many configuration parameters to the annotator as the number of resources it uses to make it completely independent of any version of its resources. Hence, considering a batch of files simply as a collection of resource files is not optimal.
+Like with \id{LinnaeusAnnotator}, the \id{BrainRegionPipes} uses a batch of files: a collection of configuration files used to set up an annotator or its dependencies. For the \id{BrainRegionPipes} the problem is easier since no file makes a reference to another one. Nevertheless, it would be very verbose and painful to load each of the ~30 files from its corresponding \id{ModelRessource}. Moreover, with our former approach we would need to add as many configuration parameters to the annotator as the number of resources it uses to make it completely independent of any version of its resources. Hence, considering a batch of files simply as a collection of resource files is not optimal.
 
 We see two other alternatives:
 
@@ -274,11 +277,11 @@ We see two other alternatives:
 
 A bluima user such as Sherlok could specify which temporary directory should be used instead of a default one -- say, \path{/tmp} -- through an extra configuration parameter so that he can manage the lifetime of the extracted data. However, with or without this extra parameter, the system would make things relatively complicated for the system administrator. For example, when installing annotation tools the user cannot know beforehand how much disk space is needed. But more importantly this would imply adding a relatively complex version checking system in bluima: in order to not extract when it is already available to prevent degrading performance we would have to check if the data is actually correct. This can be quite complex when, for example, upgrading the resources. And this is without mentioning having several pipelines using the same engine but with different version of its resources, nor dealing with multiple concurrent annotation instances. Finally, if we take the example of Sherlok running on several servers, we have the issue of data accessibility and replication for cache purposes.
 
-In addition to all the above issues, we could argue that we actually remove flexibility from the user by forcing him to use a Java system to archive and manage resources despite the fact that the system using bluima could be Java agnostic from the final user point of view. It could actually be quite painful for someone who is using a SCM such as git to manage two distinct files structures: one that is convenient to the user and one for our jar archiving system.
+In addition to all the above issues, we could argue that we actually remove flexibility from the user by forcing him to use a Java system to archive and manage resources despite the fact that the system using bluima could be Java agnostic from the final user point of view. It could actually be quite painful for someone who is using a SCM (source control management, e.g. git or svn) such as git to manage two distinct files structures: one that is convenient to the user and one for our jar archiving system.
 
 Moreover, at the end of the day, we have extracted some data that the user had to package initially in order to make the installation process easy. But this installation process could have been much simpler: instead of all those intermediary steps the user could have simply installed the configuration files on a directory of his own. From the bluima's perspective, since this simpler approach does not enforce any versioning mechanism at all, the user is free to implement any system that matches his needs. Following from this fact, Sherlok can add an extra layer -- potentially directly integrated in the bundle configuration file -- to manage resources easily for the end user. Such system could (but is not restricted to) be based on git: a user would define a (batch of) resource(s) with a git repository and either a tag or a commit SHA and Sherlok would automatically download and install the specific version of the resources.
 
-This last solution allies the flexibility of using Java \id{File} objects -- and therefore involves only little refactoring -- with the power of external, well-establish and powerful SCM tools in addition to avoid the limitation of having to rely solely on \id{InputStream} to access resources.
+This last solution allies the flexibility of using Java \id{File} objects -- and therefore involves only little refactoring of bluima annotators -- with the power of external, well-establish and powerful SCM tools in addition to avoid the limitation of having to rely solely on \id{InputStream} to access resources.
 
 \subsection{Restructuring bluima}
 
@@ -295,7 +298,7 @@ This last solution allies the flexibility of using Java \id{File} objects -- and
 \section{Future Work}
 
 \TODO{ideas? support for more variable url pattern (svn, ...) }
-
+\TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven jar (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
 %\newpage
 %\begin{appendix}
 %  \listoffigures
