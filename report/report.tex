@@ -15,6 +15,8 @@
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
 
 
 %%%
@@ -47,33 +49,24 @@ Artificial Intelligence Laboratory LIA - EPFL
 
 
 \tableofcontents
-\newpage
 
 \section{Introduction}
 
-\begin{verbatim}
-TODO:
-  - Ultimate goal: Sherlok
-      -> a REST-based service to extract data from raw text
-         such as: sentences, brain regions, ...
-  - How: through bluima
-      -> a large collection of annotators written
-  - What are annotator?
-      -> way to annotate some text with metadata
-  - Example: SentenceAnnotator
-      -> given a text, we get, roughly, a list of begin/end
-         position of the sentences
-  - What are pipelines?
-      -> way of combining annotators
-  - The challenge:
-      -> separating resources from algorithms in order
-         to improve flexibility of the system and integrate
-         easily pipelines in Sherlok
- - Work priority:
-      -> master semester project, ~3 months
-      -> full pipeline for Brain regions NER and connections
-         extractor
-\end{verbatim}
+The ultimate goal of this Master Project is to improve the integration of UIMA\TODO{ref} engines in Sherlok, which is a REST-based\TODO{ref} service to extract information from raw text. It is designed to be user-friendly and flexible so that it can analyse, via standard REST requests, any kind of input text format, provided that there is an adaptor to extract the actual text and its optional metadata \TODO{footnote: example pdf -> raw text + text "decorator"}, and pull out the interesting metadata for the user.
+
+Currently, the main dependency of Sherlok is, but is not restricted to, bluima, which is a large collection of UIMA-based \textit{annotators} (also called \textit{engines}) written in Java by the Blue Brain Project\TODO{ref} that generate metadata from the input text. We will focus on those annotators for this project.
+
+Metadata is defined by a beginning and end position in the raw text, a type and in some cases extra attributes. It can be as simple as representing the boundaries of sentences to more complex notions such as brain regions.
+
+\TODO{give concrete example of brain region}
+
+While each annotator works on its own, Sherlok let the user combines them in \textit{pipelines} where the output of one engine is used as the input of the next one. And in order to reuse engines in different pipelines, Sherlok separate the definition of the latter from the former: annotators are defined in \textit{bundles} which can be seen as proxy between the Java implementation of the UIMA annotators and the definition used in pipeline.
+
+The main challenge for this project was to separate the algorithms from their resources in bluima in order to add flexibility to the installation, update, swap and usage of those resources in Sherlok. Initially, bluima relied on a system-wide setting to locate its resources. However, since we wanted to make Sherlok run on as many systems as possible -- which should include a server architecture where a dedicated machine is in charge of storage -- we couldn't rely on this property any longer. Hence, the first and main task of this project was to devise a system capable of working without hard coded paths.
+
+It was also decided that a intelligent system for installing and loading resources on demand (i.e. when loading a pipeline) should be introduced in Sherlok. And, finally, Sherlok should at least have a full brain regions NER and connections pipeline.
+
+\TODO{include quick plan of paper}
 
 \section{Sherlok}
 
@@ -92,10 +85,12 @@ TODO:
      - ACL and similar security system can be built on top
        if sealed mode not enough
  - bundle, engine, pipeline:
-   -> what they are and
+   -> what they are (def once, use many) and
    -> how to configure them (just nitty-gritty info, not man)
  - quick example: Sentence (probably when everything is working)
 \end{verbatim}
+
+
 
 \section{bluima}
 
@@ -122,7 +117,7 @@ TODO:
 One of the first objective of this project was the disassociation of algorithms (engine annotators) and their different resources (model files, configuration files) and devise a packaging system, based on Apache Maven, that would be flexible while being simple and convenient to use and let the user define pipelines using specific annotators and models.
 
 \TODO{explain that packages would be released on public repo, and thus making them available}
-\TODO{quickly present DKpro packaging strategy & ant script. Say why we did not go with it.}
+\TODO{quickly present DKpro packaging strategy \& ant script. Say why we did not go with it.}
 
 The main idea is to store a set of resources, such as dataset trained on a specific corpus of texts, in a jar file and access them in read-only mode at runtime. Package dependencies can be used to ensure that some files are available at runtime and ideally package version should be used to let the user update resources independently of the algorithms.
 
@@ -299,6 +294,8 @@ This last solution allies the flexibility of using Java \id{File} objects -- and
 
 \TODO{ideas? support for more variable url pattern (svn, ...) }
 \TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven jar (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
+
+
 %\newpage
 %\begin{appendix}
 %  \listoffigures
