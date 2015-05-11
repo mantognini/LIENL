@@ -1,5 +1,3 @@
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % General TODO:
@@ -16,14 +14,18 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{titlesec}
-\newcommand{\sectionbreak}{\clearpage}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
 
+\newcommand{\sectionbreak}{\clearpage}
 
 %%%
 % Commands
 
-\newcommand{\id}[1]{\mbox{\textsc{#1}}}
-\newcommand{\path}[1]{\mbox{\texttt{#1}}}
+\newcommand{\ID}[1]{\mbox{\textsc{#1}}}
+\newcommand{\PATH}[1]{\mbox{\texttt{#1}}}
 
 \newcommand{\TODO}[1]{\texttt{\textcolor{YellowOrange}{(#1)}}} % for inline TODO
 
@@ -31,7 +33,9 @@
 %%%
 
 \title{Large-scale Information Extraction from Neuroscientific Literature}
+
 \date{Spring 2015}
+
 \author{Marco Antognini}
 
 \begin{document}
@@ -39,9 +43,9 @@
 \maketitle
 
 \begin{center}
-Master Semester Project under the supervision of:\\
-Jean-Cédric Chappelier \& Renaud Richardet\\
-Artificial Intelligence Laboratory LIA - EPFL
+    Master Semester Project under the supervision of\\
+    Jean-Cédric Chappelier \& Renaud Richardet\\
+    Artificial Intelligence Laboratory LIA - EPFL
 \end{center}
 
 \pagenumbering{gobble}
@@ -53,19 +57,71 @@ Artificial Intelligence Laboratory LIA - EPFL
 
 \section{Introduction}
 
-The ultimate goal of this Master Project is to improve the integration of UIMA\TODO{ref} engines in Sherlok, which is a REST-based\TODO{ref} service to extract information from raw text. It is designed to be user-friendly and flexible so that it can analyse, via standard REST requests, any kind of input text formats, provided that there is an adaptor to extract the actual text and its optional metadata \TODO{footnote: example pdf -> raw text + text "decorator"}, and pull out the interesting metadata for the user.
+The neuroscientists of Blue Brain Project \cite{bbp}, in their quest to understand how the human
+brain works, have to understand the purpose of the different components of the brain such as cells
+or whole brain regions and connect their effects with other parts of the brain or other organs.
+However, since the amount of information is colossal and is obviously not memorisable by individual
+human being or even by a team of researchers, tools need to be created in order to extract the relevant
+data from the scientific literature in a precise and fast manner.
 
-Currently, the main dependency of Sherlok is, but is not restricted to, bluima, which is an open source project developed by the Blue Brain Project \TODO{ref} and consists of a large collection of UIMA-based \textit{annotators} (also called \textit{engines}) that generate metadata from the input text. We will focus on those annotators for this project.
+Sherlok \cite{sherlok} was created to solve this large-scale data mining problem. Based on a
+Representational State Transfer (REST) API , Sherlok is a service capable of extracting information
+relevant to specific situation directly from a given text. It is designed to be user-friendly and
+flexible so that it can analyse, via standard REST requests, any kind of input text formats,
+provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
+for the user.
 
-Metadata is defined by a beginning and end position in the raw text, a type and in some cases extra attributes. It can be as simple as representing the boundaries of sentences to more complex notions such as brain regions.
+Text adaptors can extract more than just the raw text. For example, a PDF extractor could include
+information about text emphasis, whether a word is part of a section title, if proper name is an
+author or replace images by a text description.
 
-\TODO{give concrete example of brain region}
+Currently, the main dependency of Sherlok is, but is not restricted to, bluima \cite{bluima}, which
+is an open source project developed by the Blue Brain Project and consists of a large collection of
+UIMA-based \emph{annotators} (also called \emph{engines}) \cite{uima} that generate metadata from
+the input text. We will focus on those specific annotators for this project.
 
-While each annotator works on its own, Sherlok let the user combines them in \textit{pipelines} where the output of one engine is used as the input of the next one. And in order to reuse engines in different pipelines, Sherlok separates their definitions: engines are first grouped in bundles, which make the bridge between Sherlok's scripting system and the UIMA annotators written in Java, and then they can be used by several pipelines.
+Metadata is defined by a beginning and end position in the raw text, a type and in some cases extra
+attributes. It can be as simple as representing the boundaries of sentences to more complex notions
+such as brain regions.
 
-The main challenge of this project was to separate the algorithms from their resources in bluima in order to add flexibility to the installation, update and usage of those resources in Sherlok. Initially, bluima relied on a system-wide setting to locate its resources. However, since we wanted to make Sherlok run on as many systems as possible -- which should include a server architecture where a dedicated machine is in charge of storage -- we couldn't rely on this property any longer. Hence, the first and main task of this project was to devise a system capable of working without hard coded paths.
+For example, annotating the following sentence for species and brain region, the following
+annotations are generated (in addition of the part of speech tags (PoS) that are not shown here).
 
-It was also decided that an intelligent system for installing and loading resources on demand (i.e. when loading a pipeline) should be introduced in Sherlok. And, finally, Sherlok should at least have a full brain regions NER and connections pipeline based on bluima tools.
+\[
+    \text{Sex differences in the gross size of the}
+    \overbrace{\text{rat}}^{\mathclap{\text{Species}}}
+    \underbrace{\text{neocortex}}_{\mathclap{\text{Brain Region}}} \text{.}
+\]
+
+Figure \ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
+point of view by Sherlok.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=200pt]{res/sherlok_basic_rest_call.png}
+    \caption{Part of Speech Pipeline}
+    \label{fig:sherlok_basic_rest_call}
+\end{figure}
+
+While each annotator works on its own to generate metadata, Sherlok let the user combines them in
+\emph{pipelines} where the output of one engine is used as the input for the next one. And in order
+to reuse engines in different pipelines, Sherlok separates their definitions: engines are first
+grouped in bundles, which make the bridge between Sherlok's scripting system and the UIMA annotators
+written in Java, and then they can be used by several pipelines.
+
+The main challenge of this project was to separate the algorithms used in the engines from their
+resources, which could be as simple as a list of countries to trained models to detect part of
+speech, in bluima in order to add flexibility to the installation, update and usage of those
+resources in Sherlok.  Initially, bluima relied on a system-wide setting to locate its resources.
+However, since we wanted to make Sherlok run on as many systems as possible -- which should include
+a server architecture where a dedicated machine is in charge of storage -- we couldn't rely on this
+property any longer.  Hence, the first and main task of this project was to devise a system capable
+of working without hard coded paths.
+
+It was also decided that an clever system for installing and loading resources on demand (i.e.
+when loading a pipeline) should be introduced in Sherlok. And, finally, Sherlok should at least have
+a full brain regions NER and connections pipeline based on bluima tools, which includes sentence
+detection, part of speech tagging, species recognition, measures and units extraction and more.
 
 \TODO{include quick plan of paper}
 
@@ -75,7 +131,7 @@ It was also decided that an intelligent system for installing and loading resour
 TODO:
 
  => NEED TO FIRST DEFINE INSTALL PROCEDURE <=
- 
+
  - how it works
    -> from the user perspective
      - annotate easily
@@ -127,15 +183,15 @@ With Maven, main idea is to store a set of resources, such as dataset trained on
 
 It might not be clearly apparent for someone not used to work with Java jar system, but with this approach we cannot modify the resource files at runtime since they have been packaged, and this for mainly two reasons. Firstly, the Java API doesn't provide standard tools to modify such archives. And secondly, if the jar archive were signed (which is the standard procedure) then modifying its content would actually break the signature and therefore corrupt the archive.
 
-Additionally, the API to access resources inside jar files is not based on Java \id{File} objects. Instead algorithms have to use \id{InputStream} objects through \id{ClassLoader} objects to access the content of a given file. We will discuss how the current code need to be refactored in Section \ref{sec:restructuring_bluima}.
+Additionally, the API to access resources inside jar files is not based on Java \ID{File} objects. Instead algorithms have to use \ID{InputStream} objects through \ID{ClassLoader} objects to access the content of a given file. We will discuss how the current code need to be refactored in Section \ref{sec:restructuring_bluima}.
 
-Here we describe three alternatives that we used to contrast alternative strengths and weaknesses before concluding with a fourth variant that should match our needs. Below, \id{ada} and \id{bob} denote two variants of a kind of resource that are compatible with a common algorithm package, denoted \id{algo}. The \id{using*} packages can be thought as pipelines in the context of bluima/sherlok.
+Here we describe three alternatives that we used to contrast alternative strengths and weaknesses before concluding with a fourth variant that should match our needs. Below, \ID{ada} and \ID{bob} denote two variants of a kind of resource that are compatible with a common algorithm package, denoted \ID{algo}. The \ID{using*} packages can be thought as pipelines in the context of bluima/sherlok.
 
 \subsubsection{Version A}
 
-The first system we analysed spread each algorithm and set of resources into individual packages that depends on \id{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in Figure \ref{fig:pkgsysA}.
+The first system we analysed spread each algorithm and set of resources into individual packages that depends on \ID{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in Figure \ref{fig:pkgsysA}.
 
-This system has several positive aspects. First of all, tests can be easily written by specifying potentially multiple resource packages as dependencies with Maven's test scope. Then, \id{modeldep} also defines a clear Java interface to define the contract for models and their versions. Additionally, the proxy system centralises the utility to load resources and therefore eases maintenance by not involving code duplication in several packages. However, models could not be swapped on the fly since it would involve recompiling and repackaging \id{using\_my\_algo}.  Alternatively, to prevent modifications, \id{using\_my\_algo} could depend on both \id{ada} and \id{bob} packages but this would not be as flexible as we want it to be.
+This system has several positive aspects. First of all, tests can be easily written by specifying potentially multiple resource packages as dependencies with Maven's test scope. Then, \ID{modeldep} also defines a clear Java interface to define the contract for models and their versions. Additionally, the proxy system centralises the utility to load resources and therefore eases maintenance by not involving code duplication in several packages. However, models could not be swapped on the fly since it would involve recompiling and repackaging \ID{using\_my\_algo}.  Alternatively, to prevent modifications, \ID{using\_my\_algo} could depend on both \ID{ada} and \ID{bob} packages but this would not be as flexible as we want it to be.
 
 \begin{figure}
 \centering
@@ -147,9 +203,9 @@ This system has several positive aspects. First of all, tests can be easily writ
 
 \subsubsection{Version B}
 
-The second approach is based on Maven's version string: an \id{algo} will depend on an abstract \id{model} which provide a mechanism to load a specific file from its jar archive and both \id{ada} and \id{bob} model versions are defined as subversion of \id{model}. For example, the convention could be that if \id{model} is defined as version \id{0.1} then \id{ada} will use the string \id{0.1-ADA} to define its version and the \id{algo} will accept versions in the range $ [0.1,0.2) $.
+The second approach is based on Maven's version string: an \ID{algo} will depend on an abstract \ID{model} which provide a mechanism to load a specific file from its jar archive and both \ID{ada} and \ID{bob} model versions are defined as subversion of \ID{model}. For example, the convention could be that if \ID{model} is defined as version \ID{0.1} then \ID{ada} will use the string \ID{0.1-ADA} to define its version and the \ID{algo} will accept versions in the range $ [0.1,0.2) $.
 
-The model actually used will be either specified at compile time (cf. \id{using.algo2}) or be selected at runtime depending on the installed packages (cf. \id{using.algo1}) as depicted on Figure \ref{fig:pkgsysB}. While this offers a great flexibility to the user designing pipelines and allows him to swap models without repackaging anything, it means that test projects cannot ensure the correctness of more than one model version at a time. Moreover, if no specific version is bound to the pipeline, such as with \id{using.algo1}, then there is no strong guarantee that a valid version is available at runtime.
+The model actually used will be either specified at compile time (cf. \ID{using.algo2}) or be selected at runtime depending on the installed packages (cf. \ID{using.algo1}) as depicted on Figure \ref{fig:pkgsysB}. While this offers a great flexibility to the user designing pipelines and allows him to swap models without repackaging anything, it means that test projects cannot ensure the correctness of more than one model version at a time. Moreover, if no specific version is bound to the pipeline, such as with \ID{using.algo1}, then there is no strong guarantee that a valid version is available at runtime.
 
 \begin{figure}
 \centering
@@ -175,11 +231,11 @@ The third version we studied is the most simple one: as illustrated on Figure \r
 
 After exploring possibilities offered by the Maven packaging system we analysed how resources and engines are related to each others and used by pipelines in bluima. Figure \ref{fig:pkgsysD} depicts those relations. It was also considered that repackaging is an acceptable cost to swap models. The most important point was avoiding at all cost to package an exponentially huge number of pipelines to match each and every possible combinations and for this reason version C was discarded.
 
-We also reflected on the structure of the algorithm, especially on their input arguments. We came to the conclusion that, mostly for flexibility, they should accept \id{InputStream}s as input and not be bound to any models. Instead, the pipelines will be in charge to give them the proper resource data streams. Therefore the pipeline will have dependencies toward algorithms and models.
+We also reflected on the structure of the algorithm, especially on their input arguments. We came to the conclusion that, mostly for flexibility, they should accept \ID{InputStream}s as input and not be bound to any models. Instead, the pipelines will be in charge to give them the proper resource data streams. Therefore the pipeline will have dependencies toward algorithms and models.
 
-Finally, in order to centralise code and simplify loading resources we introduce \id{ModelProxy}, a utility class used by pipelines that, given a \id{String} representing a class name, opens a stream to a given file inside the class' jar archive.
+Finally, in order to centralise code and simplify loading resources we introduce \ID{ModelProxy}, a utility class used by pipelines that, given a \ID{String} representing a class name, opens a stream to a given file inside the class' jar archive.
 
-In some cases, when processing the resource as a stream, it can be convenient to have access to its original filename (e.g. when reading a compressed archive). Therefore we encapsulate the name and the stream in a class -- \id{ModelStream} -- that can be seen as a specialised \id{InputStream} with a filename property.
+In some cases, when processing the resource as a stream, it can be convenient to have access to its original filename (e.g. when reading a compressed archive). Therefore we encapsulate the name and the stream in a class -- \ID{ModelStream} -- that can be seen as a specialised \ID{InputStream} with a filename property.
 
 \begin{figure}
 \centering
@@ -194,35 +250,41 @@ In some cases, when processing the resource as a stream, it can be convenient to
 
 \TODO{better explain strategy before details}
 
-Now that the packaging strategy for annotators and their resources has been designed we can actually apply it. It was decided to start with a relatively easy annotator -- namely \id{SentenceAnnotator} which is part of OpenNLP -- to make sure our previous decision was indeed viable. The approach was based on an iterative process that can be applied to other modules as well. However, let's first take a step back and discuss the file hierarchy and how the different modules are related to each others.
+Now that the packaging strategy for annotators and their resources has been designed we can actually apply it. It was decided to start with a relatively easy annotator -- namely \ID{SentenceAnnotator} which is part of OpenNLP -- to make sure our previous decision was indeed viable. The approach was based on an iterative process that can be applied to other modules as well. However, let's first take a step back and discuss the file hierarchy and how the different modules are related to each others.
 
 \subsubsection{File Hierarchy}
 
-We wanted to create a structured, yet flexible, file hierarchy for the annotators and their resources. Since we are using Maven, we based our design on parent-child relationship in the \id{pom.xml} files: the root pom file, in addition to actually loading its children, defines the main settings, such as the Java version to use or the list of general dependencies, that will be shared with every of its children. The root pom file references both modules \path{modules/pom.xml} and \path{resources/pom.xml} that are responsible for loading their own children, that is the different annotators or utilities for the former and the actual resource for the latter.
+We wanted to create a structured, yet flexible, file hierarchy for the annotators and their
+resources. Since we are using Maven, we based our design on parent-child relationship in the
+\ID{pom.xml} files: the root pom file, in addition to actually loading its children, defines the
+main settings, such as the Java version to use or the list of general dependencies, that will be
+shared with every of its children. The root pom file references both modules \PATH{modules/pom.xml}
+and \PATH{resources/pom.xml} that are responsible for loading their own children, that is the different annotators or utilities for the former and the actual resource for the latter.
 
 It follows that when running the install (or test) command on the root Maven project then every algorithms and resources are installed (or tested).
 
 \subsubsection{Case Study: Converting OpenNLP}
 
-When converting an annotator such as \id{SentenceAnnotator}, the first thing to do is to identify the unit test responsible for its quality \TODO{add details on unit test in §bluima/§sherlok}. In this case, the annotator was imported from UIMA \TODO{ref} and it was still based on the XML engine descriptor \TODO{ref} \TODO{add explanation/contrast between XML engine descriptor \& java code in §bluima}. Therefore, we first have to make it compatible with the new and compact pipeline runner from uimaFIT \TODO{ref}.
+When converting an annotator such as \ID{SentenceAnnotator}, the first thing to do is to identify the unit test responsible for its quality \TODO{add details on unit test in §bluima/§sherlok}. In this case, the annotator was imported from UIMA \TODO{ref} and it was still based on the XML engine descriptor \TODO{ref} \TODO{add explanation/contrast between XML engine descriptor \& java code in §bluima}. Therefore, we first have to make it compatible with the new and compact pipeline runner from uimaFIT \TODO{ref}.
 
 Once the unit tests are properly working, we move on to the generation of the resource packages. Since this phase is completely repetitive, we devised a script \TODO{ref to wiki} to make the developer live less cumbersome: given a resource file, a resource name and a few other technical details we can produce a resource package, as described previously, that is ready to be used with an annotator.
 
-However, many annotators are currently using Java \id{File} parameters, or Java \id{String}s pointing to a local file. Therefore, we have to refactor these annotators and their dependencies in order to use \id{ModelStream} instead. The following strategy was applied to convert PoS, Token and Chunk annotator of OpenNLP:
+However, many annotators are currently using Java \ID{File} parameters, or Java \ID{String}s pointing to a local file. Therefore, we have to refactor these annotators and their dependencies in order to use \ID{ModelStream} instead. The following strategy was applied to convert PoS, Token and Chunk annotator of OpenNLP:
 
 \begin{enumerate}
 
-\item Renaming the \id{PARAM\_MODEL\_FILE} parameter (or any similar properties) of the annotator into \id{PARAM\_MODEL}.
+\item Renaming the \ID{PARAM\_MODEL\_FILE} parameter (or any similar properties) of the annotator into \ID{PARAM\_MODEL}.
 
-\item Updating its \id{initialize} method to load a \id{ModelStream} through \id{ModelProxy} and the \id{PARAM\_MODEL} parameter.
+\item Updating its \ID{initialize} method to load a \ID{ModelStream} through \ID{ModelProxy} and the \ID{PARAM\_MODEL} parameter.
 
-\item Updating the annotator's dependencies such that they can be constructed from \id{ModelStream}. Usually this plays well with the current implementation that must at some point use a \id{FileInputStream}. Hence, we can plug in our custom stream in place of the regular \id{FileInputStream} without restructuring the dependencies too much.
+\item Updating the annotator's dependencies such that they can be constructed from \ID{ModelStream}. Usually this plays well with the current implementation that must at some point use a \ID{FileInputStream}. Hence, we can plug in our custom stream in place of the regular \ID{FileInputStream} without restructuring the dependencies too much.
 
-\item Updating the dependency list in the annotator's \id{pom.xml} file to reflect any additional resource dependency.
+\item Updating the dependency list in the annotator's \ID{pom.xml} file to reflect any additional resource dependency.
 
 \end{enumerate}
 
-Finally, at this last point the unit test should be updated to use resource package instead of absolute path to the resource file with \id{PARAM\_MODEL}.
+Finally, at this last point the unit test should be updated to use resource package instead of
+absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \subsection{Pipeline Configuration in Sherlok}
 
@@ -235,21 +297,29 @@ Finally, at this last point the unit test should be updated to use resource pack
 
 \subsection{Current Limitations}
 
-With the strategy exposed in Section \ref{sec:packaging1}, every single resource file is packaged in a separate jar file and there is a one-to-one mapping between a file and a \id{ModelResource}. Actually, several files can be grouped inside the same jar as long as the corresponding \id{ModelResource} classes are also in the same jar. However, this has several limitations that were either not identified during the design process or wrongly not considered as significantly limiting for our use case. The purpose of this proposal is to fix those limitations by proposing a new packaging strategy for resources.
+With the strategy exposed in Section \ref{sec:packaging1}, every single resource file is packaged in a separate jar file and there is a one-to-one mapping between a file and a \ID{ModelResource}. Actually, several files can be grouped inside the same jar as long as the corresponding \ID{ModelResource} classes are also in the same jar. However, this has several limitations that were either not identified during the design process or wrongly not considered as significantly limiting for our use case. The purpose of this proposal is to fix those limitations by proposing a new packaging strategy for resources.
 
 \subsubsection{Refactoring}
 
-It has been decided that, with \id{ModelResource}, we shall use \id{InputStream} instead of \id{File} and therefore refactor some code in bluima. We initially guessed that this refactoring would in practice not be a large issue because, at some point, we need to read the file -- using \id{FileInputStream} or alike -- and therefore could use a more abstract concept (\id{InputStream} vs \id{File}) without much trouble. It is true that for simple engines this refactoring is not an issue. Unfortunately, for more complex annotators this task is actually hard or even impossible. This is particularly true for annotators using external code, where sometime \id{File} or even \id{String} paths to resources are used. For example, the \id{LinnaeusAnnotator} is an engine that wraps the external Linnaeus library. This library uses an \id{ArgParser} that cannot be created from a data stream, but requires \TODO{XXX}. Hence, the only working solution that works without refactoring the (external) Linnaeus library is to extract the configuration file into a temporary directory and provide the path to this temporary directory to the Linnaeus library.
+It has been decided that, with \ID{ModelResource}, we shall use \ID{InputStream} instead of
+\ID{File} and therefore refactor some code in bluima. We initially guessed that this refactoring
+would in practice not be a large issue because, at some point, we need to read the file -- using
+\ID{FileInputStream} or alike -- and therefore could use a more abstract concept (\ID{InputStream}
+vs \ID{File}) without much trouble. It is true that for simple engines this refactoring is not an
+issue. Unfortunately, for more complex annotators this task is actually hard or even impossible.
+This is particularly true for annotators using external code, where sometime \ID{File} or even
+\ID{String} paths to resources are used. For example, the \ID{LinnaeusAnnotator} is an engine that wraps the external Linnaeus library. This library uses an \ID{ArgParser} that cannot be created from a data stream, but requires \TODO{XXX}. Hence, the only working solution that works without refactoring the (external) Linnaeus library is to extract the configuration file into a temporary directory and provide the path to this temporary directory to the Linnaeus library.
 
 \subsubsection{Resource Interdependency}
 
-Attempting to convert \id{LinnaeusAnnotator} also highlighted another issue: its main configuration file makes references to some other files with relative paths. The issue here is that with our resource packaging system the files are only accessible through streams via \id{ModelProxy} but not paths.
+Attempting to convert \ID{LinnaeusAnnotator} also highlighted another issue: its main configuration
+file makes references to some other files with relative paths. The issue here is that with our resource packaging system the files are only accessible through streams via \ID{ModelProxy} but not paths.
 
 Here there are two potential solutions:
 
 \begin{itemize}
 
-\item either we completely rewrite Linnaeus, since it is a closed source program, to support reference to \id{ModelResource} in the configuration files;
+\item either we completely rewrite Linnaeus, since it is a closed source program, to support reference to \ID{ModelResource} in the configuration files;
 
 \item or we put all the related configuration files in an archive -- say, a tar file -- and extract them into a temporary directory.
 
@@ -259,13 +329,13 @@ Obviously the first solution is not practical within the short time period alloc
 
 \subsection{Batch Of Files}
 
-Like with \id{LinnaeusAnnotator}, the \id{BrainRegionPipes} uses a batch of files: a collection of configuration files used to set up an annotator or its dependencies. For the \id{BrainRegionPipes} the problem is easier since no file makes a reference to another one. Nevertheless, it would be very verbose and painful to load each of the ~30 files from its corresponding \id{ModelRessource}. Moreover, with our former approach we would need to add as many configuration parameters to the annotator as the number of resources it uses to make it completely independent of any version of its resources. Hence, considering a batch of files simply as a collection of resource files is not optimal.
+Like with \ID{LinnaeusAnnotator}, the \ID{BrainRegionPipes} uses a batch of files: a collection of configuration files used to set up an annotator or its dependencies. For the \ID{BrainRegionPipes} the problem is easier since no file makes a reference to another one. Nevertheless, it would be very verbose and painful to load each of the ~30 files from its corresponding \ID{ModelRessource}. Moreover, with our former approach we would need to add as many configuration parameters to the annotator as the number of resources it uses to make it completely independent of any version of its resources. Hence, considering a batch of files simply as a collection of resource files is not optimal.
 
 We see two other alternatives:
 
 \begin{enumerate}
 
-\item First, if we devise a strict naming convention for each \id{ModelResource} class involved in setting up an annotator, then we can ask the user for a unique package name -- instead of a potentially numerous \id{ModelResource} class names -- and load each resource class from that package. While this solution is simple on the paper it actually requires as much refactoring as the idea elaborated in Section \ref{sec:packaging1}. Additionally, it doesn't solve the interdependency between resources illustrated above with \id{LinnaeusAnnotator}.
+\item First, if we devise a strict naming convention for each \ID{ModelResource} class involved in setting up an annotator, then we can ask the user for a unique package name -- instead of a potentially numerous \ID{ModelResource} class names -- and load each resource class from that package. While this solution is simple on the paper it actually requires as much refactoring as the idea elaborated in Section \ref{sec:packaging1}. Additionally, it doesn't solve the interdependency between resources illustrated above with \ID{LinnaeusAnnotator}.
 
 \item Alternatively, if we consider that all the files used to configure an engine have names following a precise naming specification, then we could aggregate them in an archive that would get extracted at runtime in a temporary directory. This solution has at least two significant advantages:
 
@@ -279,7 +349,7 @@ We see two other alternatives:
 
 \end{enumerate}
 
-A bluima user such as Sherlok could specify which temporary directory should be used instead of a default one -- say, \path{/tmp} -- through an extra configuration parameter so that he can manage the lifetime of the extracted data. However, with or without this extra parameter, the system would make things relatively complicated for the system administrator. For example, when installing annotation tools the user cannot know beforehand how much disk space is needed.
+A bluima user such as Sherlok could specify which temporary directory should be used instead of a default one -- say, \PATH{/tmp} -- through an extra configuration parameter so that he can manage the lifetime of the extracted data. However, with or without this extra parameter, the system would make things relatively complicated for the system administrator. For example, when installing annotation tools the user cannot know beforehand how much disk space is needed.
 
 \TODO{explain that not knowing the amount of space required is ok for Sherlok}
 
@@ -297,7 +367,7 @@ Moreover, at the end of the day, we have extracted some data that the user had t
 
 We argue that the installation process could have been much simpler: instead of all those intermediary steps the user could have simply installed the configuration files on a directory of his own. From the bluima's perspective, since this simpler approach does not enforce any versioning mechanism at all, the user is free to implement any system that matches his needs. Following from this fact, Sherlok can add an extra layer -- potentially directly integrated in the bundle configuration file -- to manage resources easily for the end user. Such system could (but is not restricted to) be based on git: a user would define a (batch of) resource(s) with a git repository and either a tag or a commit SHA and Sherlok would automatically download and install the specific version of the resources.
 
-This last solution allies the flexibility of using Java \id{File} objects -- and therefore involves only little refactoring of bluima annotators -- with the power of external, well-establish and powerful SCM tools in addition to avoid the limitation of having to rely solely on \id{InputStream} to access resources.
+This last solution allies the flexibility of using Java \ID{File} objects -- and therefore involves only little refactoring of bluima annotators -- with the power of external, well-establish and powerful SCM tools in addition to avoid the limitation of having to rely solely on \ID{InputStream} to access resources.
 
 \TODO{insert comparative table}
 
@@ -322,6 +392,24 @@ This last solution allies the flexibility of using Java \id{File} objects -- and
 \TODO{ideas? support for more variable url pattern (svn, ...) }
 \TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven jar (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
 
+\begin{thebibliography}{9}
+
+\bibitem{bbp}
+    Blue Brain Project,
+    \href{http://bluebrain.epfl.ch/}{bluebrain.epfl.ch}
+
+\bibitem{sherlok}
+    Sherlok
+    \TODO{write me}
+
+\bibitem{bluima}
+    bluima
+    \TODO{write me}
+
+\bibitem{uima}
+    Apache UIMA
+    \TODO{write me}
+\end{thebibliography}
 
 %\newpage
 %\begin{appendix}

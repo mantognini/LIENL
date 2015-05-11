@@ -1,0 +1,48 @@
+@startuml
+
+skinparam sequence {
+    ArrowColor DeepSkyBlue
+    LifeLineBorderColor DeepSkyBlue
+    LifeLineBackgroundColor #A9DCDF
+    
+    ParticipantBorderColor Black
+    ParticipantBackgroundColor Black
+'   ParticipantFontName Impact
+'   ParticipantFontSize 17
+'   ParticipantFontColor #A9DCDF
+    
+    ActorBorderColor Black
+    ActorBackgroundColor #A9DCDF
+'   ActorFontColor DeepSkyBlue
+'   ActorFontSize 17
+'   ActorFontName Aapex
+}
+
+actor User
+database Sherlok
+participant "Sentence\nAnnotator" as A1 #LightCyan
+participant "Token\nAnnotator" as A2 #LightCyan
+participant "PoSTag\nAnnotator" as A3 #LightCyan
+
+User -> Sherlok : /annotate/PoS
+activate Sherlok
+
+group PoS Pipeline
+Sherlok -> A1 : annotate
+activate A1
+A1 -> Sherlok : metadata
+deactivate A1
+Sherlok -> A2 : annotate
+activate A2
+A2 -> Sherlok : metadata
+deactivate A2
+Sherlok -> A3 : annotate
+activate A3
+A3 -> Sherlok : metadata
+deactivate A3
+end
+
+Sherlok -> User : metadata
+deactivate Sherlok
+
+@enduml

@@ -1,0 +1,19 @@
+
+@startuml
+
+left to right direction
+
+:User: --> (Sherlok) : annotate text
+
+(Sherlok) --> (Tokenizer) : use engine
+(Sherlok) --> (Part Of Speech) : use engine
+(Sherlok) --> (Another Annotator) : use engine
+
+(Tokenizer) --[#LightSkyBlue]> (Sherlok) : metadata
+(Part Of Speech) --[#LightSkyBlue]> (Sherlok) : metadata
+(Another Annotator) --[#LightSkyBlue]> (Sherlok) : metadata
+
+(Sherlok) --[#MediumSeaGreen]> :User: : annotations
+
+@enduml
+
