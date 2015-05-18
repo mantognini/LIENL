@@ -18,6 +18,10 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
+\usepackage{ragged2e}  % for '\RaggedRight' macro (allows hyphenation)
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 
 \newcommand{\sectionbreak}{\clearpage}
 
@@ -29,6 +33,8 @@
 
 \newcommand{\TODO}[1]{\texttt{\textcolor{YellowOrange}{(#1)}}} % for inline TODO
 \newcommand{\REST}[1]{\textsf{#1}}
+
+\newcommand{\tablewidth}{0.9\linewidth}
 
 %
 %%%
@@ -215,10 +221,46 @@ For quality purpose, Sherlok also allows the user to provide tests for pipelines
 through the \REST{/test/<pipeline name>} query in order to ensure that pipelines continue to work
 properly after updating Sherlok or the engines' dependencies.
 
-\section{bluima}
+\section{Bluima, UIMA and RUTA}
 \label{sec:bluima}
 
-\TODO{write me}
+Bluima is an augmented collection of different libraries and UIMA \cite{uima} engines open-sourcly
+developed that the Blue Brain Project \cite{bbp} decided to aggregate together to simplify
+large-scale information extraction from the neuroscientific literature. It includes for example a
+species annotator based on the Linnaeus library \cite{linnaeus}, or the OpenNLP toolkit
+\cite{opennlp} to perform Part of Speech (PoS) tagging, sentence splitting and more. The complete
+list of subproject is detailed in Table \ref{tab:bluima_subprojects}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{\tablewidth}{@{} c Y @{}} % no margin at extremum
+        \toprule
+
+        OpenNLP \cite{opennlp} & a machine learning based toolkit for the processing of natural
+        language text \\
+
+        \midrule
+
+        Linnaeus \cite{linnaeus} & a general-purpose dictionary matching software, capable of
+        processing multiple types of document formats in the biomedical domain \\
+
+        \midrule
+
+        & \TODO{add the others} \\
+
+        \bottomrule
+    \end{tabularx}
+    \caption{bluima aggregated projects}
+    \label{tab:bluima_subprojects}
+\end{table}
+
+\TODO{explain how UIMA works}
+
+\TODO{explain what RUTA is}
+
+\TODO{explain how Sherlok use that}
+
+
 
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
@@ -470,17 +512,23 @@ This last solution allies the flexibility of using Java \ID{File} objects -- and
     Apache RUTA,
     \href{https://uima.apache.org/ruta.html}{uima.apache.org/ruta.html}
 
-
 \bibitem{apachefundation}
     The Apache Software Foundation,
     \href{http://www.apache.org/}{apache.org}
 
+\bibitem{opennlp}
+    Apache OpenNLP,
+    \href{https://opennlp.apache.org/}{opennlp.apache.org}
+
+\bibitem{linnaeus}
+    Linnaeus,
+    \href{http://linnaeus.sourceforge.net/}{linnaeus.sourceforge.net}
+
 \end{thebibliography}
 
-%\newpage
-%\begin{appendix}
-%  \listoffigures
-%  \listoftables
-%\end{appendix}
+\begin{appendix}
+  \listoffigures
+  \listoftables
+\end{appendix}
 
 \end{document}
