@@ -204,7 +204,7 @@ agnostic configuration system that separate the definition of engines from their
     \item[Pipelines] The user writes the RUTA script which can be as simple as chaining engines from
         the bundles configuration files in \emph{pipelines}. The whole features set of RUTA is
         available to the user so that simple scripts don't require any Java implementation from the
-        user.
+        user. Similarly to bundles, Sherlok allow downloading resources for pipeline automatically.
 \end{description}
 
 By default Sherlok comes with pipelines to extract information about brain regions, part of speech
@@ -229,7 +229,7 @@ developed that the Blue Brain Project \cite{bbp} decided to aggregate together t
 large-scale information extraction from the neuroscientific literature. It includes for example a
 species annotator based on the Linnaeus library \cite{linnaeus}, or the OpenNLP toolkit
 \cite{opennlp} to perform Part of Speech (PoS) tagging, sentence splitting and more. The complete
-list of subproject is detailed in Table \ref{tab:bluima_subprojects}.
+list of subproject is detailed in Table~\ref{tab:bluima_subprojects}.
 
 \begin{table}[h]
     \centering
@@ -254,13 +254,68 @@ list of subproject is detailed in Table \ref{tab:bluima_subprojects}.
     \label{tab:bluima_subprojects}
 \end{table}
 
-\TODO{explain how UIMA works}
+\TODO{explain how UIMA works (with a figure of how an annotator works)}
 
 \TODO{explain what RUTA is}
 
 \TODO{explain how Sherlok use that}
 
+\section{Packaging Strategy}
 
+Initially all resources used by bluima's engines, such as models trained on the GENIA corpus
+\cite{genia} to tag part of speech elements, were accessed via a system wide path variable. In this
+section we will discuss the adopted strategy to improve this system and make bluima path agnostic in
+order to improve its integration in Sherlok. In the Appendix <?> we show a few other alternatives
+that were considered during this project but not good enough for our needs.
+
+\subsection{Initial Situation}
+
+\TODO{re-explain the issue of global variable with an concrete example}
+
+\TODO{bluima not available in Maven central}
+
+\TODO{central point of project -> make it easier to integrate any engine in Sherlok}
+
+\subsection{Proposed Solution}
+
+\TODO{several significant constraint identified: refactoring, resource interdependency, batch of
+files, flexibility for the user}
+
+\TODO{conclusion: adopted solution}
+
+\TODO{cmp table}
+
+\TODO{see annex for more details on Maven-based strategy}
+
+\subsection{Impact on bluima}
+
+\TODO{minor refactoring}
+
+\TODO{add path parameter for all files/directories}
+
+\TODO{deprecated/remove code that still uses the global variable}
+
+\TODO{how tests are impacted}
+
+\subsection{Configuration in Sherlok}
+
+\TODO{where? -> pipeline + bundle (examples) + file structure}
+
+\TODO{how? git/http/test + can easily be extended}
+
+\TODO{where the data is saved and how it can be cleaned if needed}
+
+\TODO{class diagram?}
+
+\subsection{Possible Extensions}
+
+\TODO{auto archive extractor / ssh / svn / hg / \dots}
+
+\TODO{auto update for HTTP (using rfc + download if newer)}
+
+\TODO{auto update for git branches (support for git hooks, \dots)}
+
+\TODO{improve git download strategy (if SHA, depth 1, \dots)}
 
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
@@ -514,7 +569,7 @@ This last solution allies the flexibility of using Java \ID{File} objects -- and
 
 \bibitem{apachefundation}
     The Apache Software Foundation,
-    \href{http://www.apache.org/}{apache.org}
+    \href{http://www.apache.org/}{www.apache.org}
 
 \bibitem{opennlp}
     Apache OpenNLP,
@@ -523,6 +578,10 @@ This last solution allies the flexibility of using Java \ID{File} objects -- and
 \bibitem{linnaeus}
     Linnaeus,
     \href{http://linnaeus.sourceforge.net/}{linnaeus.sourceforge.net}
+
+\bibitem{genia}
+    GENIA corpus,
+    \href{http://www.nactem.ac.uk/aNT/genia.html}{www.nactem.ac.uk/aNT/genia.html}
 
 \end{thebibliography}
 
