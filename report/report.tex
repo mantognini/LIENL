@@ -28,6 +28,7 @@
 \newcommand{\PATH}[1]{\mbox{\texttt{#1}}}
 
 \newcommand{\TODO}[1]{\texttt{\textcolor{YellowOrange}{(#1)}}} % for inline TODO
+\newcommand{\REST}[1]{\textsf{#1}}
 
 %
 %%%
@@ -57,7 +58,7 @@
 
 \section{Introduction}
 
-The neuroscientists of Blue Brain Project \cite{bbp}, in their quest to understand how the human
+The neuroscientists of Blue Brain Project \cite{bbp}, in their quest to understand how the
 brain works, have to understand the purpose of the different components of the brain such as cells
 or whole brain regions and connect their effects with other parts of the brain or other organs.
 However, since the amount of information is colossal and is obviously not memorisable by individual
@@ -80,12 +81,12 @@ is an open source project developed by the Blue Brain Project and consists of a 
 UIMA-based \emph{annotators} (also called \emph{engines}) \cite{uima} that generate metadata from
 the input text. We will focus on those specific annotators for this project.
 
-Metadata is defined by a beginning and end position in the raw text, a type and in some cases extra
+Metadata is defined by a begin and end position in the raw text, a type and in some cases extra
 attributes. It can be as simple as representing the boundaries of sentences to more complex notions
 such as brain regions.
 
-For example, annotating the following sentence for species and brain region, the following
-annotations are generated (in addition of the part of speech tags (PoS) that are not shown here).
+For example, annotating the following sentence for species and brain regions, generates the
+following annotations (in addition to the part of speech tags (PoS) that are not shown here).
 
 \[
     \text{Sex differences in the gross size of the}
@@ -127,40 +128,97 @@ detection, part of speech tagging, species recognition, measures and units extra
 
 \section{Sherlok}
 
-\begin{verbatim}
-TODO:
+Sherlok is an open source driven service for text information extraction initiated by Renaud
+Richardet when working on the Blue Brain Project to extend and popularise bluima engines. However,
+Sherlok is not restricted to neuroscience and as such, system administrators don't require any prior
+neuroscientific knowledge.
 
- => NEED TO FIRST DEFINE INSTALL PROCEDURE <=
+\subsection{REST-Based Service}
 
- - how it works
-   -> from the user perspective
-     - annotate easily
-     - no install
-     - standard REST API available in js, py, ...
-     - nice web interface editor
-   -> from the sys.admin perspective
-     - simple install procedure
-     - auto fetch of dependencies
-     - flexible load-balancing if need
-     - ACL and similar security system can be built on top
-       if sealed mode not enough
- - bundle, engine, pipeline:
-   -> what they are (def once, use many) and
-   -> how to configure them (just nitty-gritty info, not man)
- - quick example: Sentence (probably when everything is working)
-\end{verbatim}
+The service provided through a classic Representational State Transfer (REST) API can be installed
+in-house by system administrators to match the specific needs of researchers. From the user
+perspective, only a basic understanding of the Hypertext Transfer Protocol (HTTP) is required to
+build queries used to communicate with Sherlok.
 
-Like more and more services nowadays, Sherlok offers a standard REST API to let the user install new bundles and pipelines, process texts and more. The fact that any language or tools that has support for REST calls can seamlessly use Sherlok API is one of its strongest advantages and thus doesn't restrict the user to Java.
+\TODO{insert table of queries}
 
-Sherlok distinguishes two kind of users:
+While its implementation is written in Java, any language or tool with basic socket support can
+communicate with Sherlok and benefits from its capabilities without going through the frequent
+required hassle to build a C interface to communicate between Java and another language.
+Additionally, as a proof of concept, Sherlok provides a JavaScript, Java and Python client API to
+emit the standard REST queries in those languages. And due to the nature of REST and HTTP protocols
+they can easily be extended to support more languages.
+
+From a regular user point of view, \REST{/annotate/<pipeline~name>?text=<input~text>} is all there is to
+know to use a given pipeline to process some text: nothing is installed on the user side and
+everything is directly available without investing in powerful personal computer. And if the
+existing pipelines don't fit the user's needs a new pipeline can be submitted to Sherlok which will
+automatically install the required dependencies, would they be Java packages or regular files needed
+at runtime.Additionally, Sherlok comes with a web editor to easily install new pipelines, edit them
+and process text without manually writing any REST queries.
+
+From the system administrator point of view, Sherlok is no less flexible or harder to use. The
+installation procedure is as simple as extracting an archive and launching an executable. And
+because Sherlok runs on the Java Virtual Machine (JVM), any system with a proper Java Runtime
+Environment 7 (JRE7) should be able to run Sherlok. The memory and disk requirement depends
+on the pipelines that the users will run. However, the system administrator doesn't have to play
+resources for pipelines that are not used: Sherlok easily allows obsolete pipelines or resources to
+be deleted.
+
+Were one server not be capable of providing enough computational power to handle all users'
+requests, several instance of Sherlok can be run in a \emph{slave} mode to balance the workload on
+several machines.
+
+Moreover, if the system administrator wants to restrict the installation or modification of
+pipelines, he can run Sherlok in \emph{sealed} mode to freeze the configuration of the service.
+While Sherlok doesn't have any particular Access Control List (ACL) mechanism to support
+fine-grained access control and restrict users permissions on a case by case basis, custom ACL
+system can easily be built on top of Sherlok: a simple proxy program can integrate restricted access
+using for example Unix accounts or a Lightweight Directory Access Protocol (LDAP) server to filter
+requests before Sherlok can process them.
+
+\subsection{UIMA-Based Configurable Service}
+
+Internally, Sherlok will process the input text through Unstructured Information Management
+Architecture (UIMA) \cite{uima} engines or more generally through a Rule-based Text Annotation
+(RUTA) scripts \cite{ruta}. Both RUTA and UIMA are projects of the Apache Software Foundation
+\cite{apachefundation} focusing in analysing large volumes of unstructured information in order to
+discover knowledge that is relevant to an end user. While Sherlok focuses on the Java Frameworks for
+UIMA, it could be extended in the future to also support the C++ or Scaleout Frameworks.
+
+In order to let users who are not Java developers combine engines together, Sherlok has a Java
+agnostic configuration system that separate the definition of engines from their usage in pipelines.
 
 \begin{description}
-
-\item[System administrator] He is the one who will run and manage the infrastructure on which Sherlok is installed. From this perspective, \TODO{...}
-
-\item[Final user] \TODO{...}
-
+    \item[Bundles] The user lists the UIMA engines that he wants to use in \emph{bundles} by specifying
+        the Java package dependencies, the required resource files and configure the different
+        parameters of the engines. To simplify installing resources, Sherlok supports download at
+        execution time of Git repositories or HTTP(S) URLs, but also lets the user specify local
+        path on the server if needed.
+    \item[Pipelines] The user writes the RUTA script which can be as simple as chaining engines from
+        the bundles configuration files in \emph{pipelines}. The whole features set of RUTA is
+        available to the user so that simple scripts don't require any Java implementation from the
+        user.
 \end{description}
+
+By default Sherlok comes with pipelines to extract information about brain regions, part of speech
+and much more. The engines used in those pipelines come from bluima, which is presented in Section
+\ref{sec:bluima}.
+
+The results of annotation are presented to the used in JSON format \cite{json}. For example, the
+\ID{bluima.sentence} pipeline will give the following output when processing ``\textit{Switzerland
+is close to Italy, the land of pasta and Michelangelo. Paris is in France. And Madrid in Spain.}'':
+
+\TODO{insert JSON output listing}
+
+For quality purpose, Sherlok also allows the user to provide tests for pipelines that can be run
+through the \REST{/test/<pipeline name>} query in order to ensure that pipelines continue to work
+properly after updating Sherlok or the engines' dependencies.
+
+\section{bluima}
+\label{sec:bluima}
+
+\TODO{write me}
 
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
@@ -290,10 +348,8 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \TODO{explain how this gets configured in Sherlok}
 
-\section{Packaging: a better approach}
+\section{Packaging Strategy}
 \label{sec:packaging2}
-
-\TODO{find better title}
 
 \subsection{Current Limitations}
 
@@ -357,7 +413,7 @@ But more importantly this would imply adding a relatively complex version checki
 
 \subsubsection{Flexibility}
 
-In addition to all the above issues, we could argue that we actually remove flexibility from the user by forcing him to use a Java system to archive and manage resources despite the fact that the system using bluima could be Java agnostic from the final user point of view. It could actually be quite painful for someone who is using a source control management (SCM) tool, such as git, to manage two distinct files structures: one that is convenient to the user and one for our jar archiving system.
+In addition to all the above issues, we could argue that we actually remove flexibility from the user by forcing him to use a Java system to archive and manage resources despite the fact that the system using bluima could be Java agnostic from the final user point of view. It could actually be quite painful for someone who is using a source control management (SCM) tool, such as Git, to manage two distinct files structures: one that is convenient to the user and one for our jar archiving system.
 
 Moreover, at the end of the day, we have extracted some data that the user had to package initially in order to make the installation process easy.
 
@@ -365,7 +421,7 @@ Moreover, at the end of the day, we have extracted some data that the user had t
 
 \TODO{find a better title...}
 
-We argue that the installation process could have been much simpler: instead of all those intermediary steps the user could have simply installed the configuration files on a directory of his own. From the bluima's perspective, since this simpler approach does not enforce any versioning mechanism at all, the user is free to implement any system that matches his needs. Following from this fact, Sherlok can add an extra layer -- potentially directly integrated in the bundle configuration file -- to manage resources easily for the end user. Such system could (but is not restricted to) be based on git: a user would define a (batch of) resource(s) with a git repository and either a tag or a commit SHA and Sherlok would automatically download and install the specific version of the resources.
+We argue that the installation process could have been much simpler: instead of all those intermediary steps the user could have simply installed the configuration files on a directory of his own. From the bluima's perspective, since this simpler approach does not enforce any versioning mechanism at all, the user is free to implement any system that matches his needs. Following from this fact, Sherlok can add an extra layer -- potentially directly integrated in the bundle configuration file -- to manage resources easily for the end user. Such system could (but is not restricted to) be based on Git: a user would define a (batch of) resource(s) with a Git repository and either a tag or a commit SHA and Sherlok would automatically download and install the specific version of the resources.
 
 This last solution allies the flexibility of using Java \ID{File} objects -- and therefore involves only little refactoring of bluima annotators -- with the power of external, well-establish and powerful SCM tools in addition to avoid the limitation of having to rely solely on \ID{InputStream} to access resources.
 
@@ -375,7 +431,7 @@ This last solution allies the flexibility of using Java \ID{File} objects -- and
 
 \TODO{write me}
 
-\TODO{git submodules for resources for bluima }
+\TODO{Git submodules for resources for bluima }
 
 \subsection{Pipeline Configuration in Sherlok}
 
@@ -392,23 +448,33 @@ This last solution allies the flexibility of using Java \ID{File} objects -- and
 \TODO{ideas? support for more variable url pattern (svn, ...) }
 \TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven jar (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 
 \bibitem{bbp}
     Blue Brain Project,
     \href{http://bluebrain.epfl.ch/}{bluebrain.epfl.ch}
 
 \bibitem{sherlok}
-    Sherlok
-    \TODO{write me}
+    Sherlok,
+    \href{http://sherlok.io}{sherlok.io}
 
 \bibitem{bluima}
-    bluima
-    \TODO{write me}
+    bluima,
+    \href{https://github.com/BlueBrain/bluima}{github.com/BlueBrain/bluima}
 
 \bibitem{uima}
-    Apache UIMA
-    \TODO{write me}
+    Apache UIMA,
+    \href{https://uima.apache.org/}{uima.apache.org}
+
+\bibitem{ruta}
+    Apache RUTA,
+    \href{https://uima.apache.org/ruta.html}{uima.apache.org/ruta.html}
+
+
+\bibitem{apachefundation}
+    The Apache Software Foundation,
+    \href{http://www.apache.org/}{apache.org}
+
 \end{thebibliography}
 
 %\newpage
