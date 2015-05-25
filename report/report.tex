@@ -1,11 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% General TODO:
-%  - fix images' size
-%  - improve style of code/identifier
-%  - references / bibliography
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass{article}
 
@@ -22,6 +14,9 @@
 \usepackage{ragged2e}  % for '\RaggedRight' macro (allows hyphenation)
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}} % check mark
+\newcommand{\xmark}{\ding{55}} % cross mark
 
 \newcommand{\sectionbreak}{\clearpage}
 
@@ -35,6 +30,7 @@
 \newcommand{\REST}[1]{\textsf{#1}}
 
 \newcommand{\tablewidth}{0.9\linewidth}
+\newcommand{\verticaltext}[1]{\rotatebox{90}{#1}}
 
 %
 %%%
@@ -297,6 +293,8 @@ cost low, allow resources to refer to one-another, make it possible to group fil
 \emph{batches}, avoid runtime performance penalties wherever possible and remove as little
 flexibility from the users as possible.
 
+\TODO{add § for runtime safety}
+
 \subsubsection{Refactoring and Maintenance}
 
 The first idea that we explored was to package resources inside jar archive and use Maven to
@@ -421,10 +419,11 @@ sub-archives, then accessing those files via a proxy and an extra layer of resou
 potentially extracting sub-archives into a temporary directory, and by this mean forcing the user to
 use a specific versioning system as DKpro-like systems do.
 
-From bluima perspective, the user could have simply installed the configuration files in a directory
-of his choosing. Withal, since this simpler approach does not enforce any versioning mechanism at
-all, the user is free to implement any system that matches his needs. Following from this fact,
-Sherlok can add an extra layer, directly integrated in the bundle/pipeline configuration file, to
+From bluima perspective, the user could simply installed the configuration files in a directory of
+his choosing and configured the engines with paths to the actual resources without using any
+system-wide variable. Withal, since this simpler approach does not enforce any versioning mechanism
+at all, the user is free to implement any system that matches his needs. Following from this fact,
+Sherlok can add an extra layer, directly integrated in the bundle \& pipeline configuration files, to
 manage resources easily for the end users. Such system can, but is not restricted to, be based on
 Git: a user can define a (batch of) resource(s) by a Git repository and an optional tag or commit
 SHA and Sherlok then can automatically download and install the specific version of the resources.
@@ -434,8 +433,43 @@ only little refactoring of bluima annotators, with the power of external, well-e
 powerful SCM tools in addition to avoid the limitation of having to rely solely on \ID{InputStream}
 to access resources. This is why it was selected and implemented in this project.
 
-\TODO{cmp table}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l c c c c c}
+        Strategy & \verticaltext{Refactoring-Friendly} & \verticaltext{DRY-code} & \verticaltext{Flexibility} &
+        \verticaltext{Repackaging Cost} & \verticaltext{Runtime Safety} \\
 
+        \toprule
+
+        DKpro-Like \cite{dkpro} & \xmark & \cmark & (\cmark) & \xmark & ? \\
+
+        \midrule
+
+        Proxy-Based A & \xmark & \cmark & \xmark & \xmark & \cmark \\
+
+        \midrule
+
+        Proxy-Based B & \xmark & \cmark & \xmark & \cmark & (\cmark) \\
+
+        \midrule
+
+        Proxy-Based C & \xmark & \xmark & \xmark & \xmark & \cmark \\
+
+        \midrule
+
+        Proxy-Based D & \xmark & \cmark & \xmark & \cmark & \xmark \\
+
+        \midrule
+
+        Adopted Solution & \cmark & \cmark \cmark & \cmark \cmark & \cmark & \xmark \\
+
+        \bottomrule
+    \end{tabular}
+    \caption{Packaging Strategies Comparison}
+    \label{tab:packaging_strategies}
+\end{table}
+
+\TODO{add explanation about the table and reference to index for the ``Proxy-Based''}
 
 \subsection{Impact on bluima}
 
