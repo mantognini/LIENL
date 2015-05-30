@@ -62,11 +62,11 @@
 
 \section{Introduction}
 
-The neuroscientists at the Blue Brain Project \cite{bbp}, in their quest to model the human
-brain, have to understand the interactions between the different components of the brain such as cells
-or brain regions and connect their effects with other parts of the brain or other organs.
-However, since the amount of information is colossal and is obviously not memorisable by individual
-human being or even by a team of researchers, tools need to be created in order to extract the relevant
+The neuroscientists at the Blue Brain Project \cite{bbp}, in their quest to model the human brain,
+have to understand the interactions between the different components of the brain such as cells or
+brain regions and connect their effects with other parts of the brain or other organs.  However,
+since the amount of information is colossal and is obviously not memorisable by individual human
+being or even by a team of researchers, tools need to be created in order to extract the relevant
 data from the scientific literature in a precise and fast manner.
 
 Sherlok \cite{sherlok} was created to solve this large-scale data mining problem. Based on a
@@ -80,9 +80,9 @@ is an open source project developed at the Blue Brain Project and consists of a 
 UIMA-based \emph{annotators} (also called \emph{engines}) \cite{uima} that generate metadata from
 the input text. We will focus on those specific annotators for this project.
 
-Generated metadata consists of a begin and end position in the raw text, a type \TODO{define type}
-and in some cases extra attributes. It can be as simple as representing the boundaries of sentences
-to more complex notions such as brain regions.
+Generated metadata consists of a begin and end position in the raw text, a type identifier and in
+some cases extra attributes. It can be as simple as representing the boundaries of sentences to more
+complex notions such as brain regions.
 
 For example, annotating the following sentence for species and brain regions, generates the
 following annotations (for simplification, part of speech tags (PoS) are not shown here).
