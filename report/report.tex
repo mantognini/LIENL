@@ -62,41 +62,38 @@
 
 \section{Introduction}
 
-The neuroscientists of Blue Brain Project \cite{bbp}, in their quest to understand how the
-brain works, have to understand the purpose of the different components of the brain such as cells
-or whole brain regions and connect their effects with other parts of the brain or other organs.
+The neuroscientists at the Blue Brain Project \cite{bbp}, in their quest to model the human
+brain, have to understand the interactions between the different components of the brain such as cells
+or brain regions and connect their effects with other parts of the brain or other organs.
 However, since the amount of information is colossal and is obviously not memorisable by individual
 human being or even by a team of researchers, tools need to be created in order to extract the relevant
 data from the scientific literature in a precise and fast manner.
 
 Sherlok \cite{sherlok} was created to solve this large-scale data mining problem. Based on a
-Representational State Transfer (REST) API , Sherlok is a service capable of extracting information
-relevant to specific situation directly from a given text. It is designed to be user-friendly and
-flexible so that it can analyse, via standard REST requests, any kind of input text formats,
-provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
-for the user.
-
-Text adaptors can extract more than just the raw text. For example, a PDF extractor could include
-information about text emphasis, whether a word is part of a section title, if proper name is an
-author or replace images by a text description.
+Representational State Transfer (REST) API, Sherlok is a service capable of extracting information
+relevant to specific situation directly from a given text. It is designed to be both user- and
+developer-friendly and flexible so that it can analyse, via standard REST requests, any kind of
+input text formats.
 
 Currently, the main dependency of Sherlok is, but is not restricted to, bluima \cite{bluima}, which
-is an open source project developed by the Blue Brain Project and consists of a large collection of
+is an open source project developed at the Blue Brain Project and consists of a large collection of
 UIMA-based \emph{annotators} (also called \emph{engines}) \cite{uima} that generate metadata from
 the input text. We will focus on those specific annotators for this project.
 
-Metadata is defined by a begin and end position in the raw text, a type and in some cases extra
-attributes. It can be as simple as representing the boundaries of sentences to more complex notions
-such as brain regions.
+Generated metadata consists of a begin and end position in the raw text, a type \TODO{define type}
+and in some cases extra attributes. It can be as simple as representing the boundaries of sentences
+to more complex notions such as brain regions.
 
 For example, annotating the following sentence for species and brain regions, generates the
-following annotations (in addition to the part of speech tags (PoS) that are not shown here).
+following annotations (for simplification, part of speech tags (PoS) are not shown here).
 
 \[
     \text{Sex differences in the gross size of the}
     \overbrace{\text{rat}}^{\mathclap{\text{Species}}}
     \underbrace{\text{neocortex}}_{\mathclap{\text{Brain Region}}} \text{.}
 \]
+
+\TODO{use more complex sentence from http://www.ncbi.nlm.nih.gov/pubmed/25609795 Table 1}
 
 Figure \ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
 point of view by Sherlok.
@@ -108,34 +105,42 @@ point of view by Sherlok.
     \label{fig:sherlok_basic_rest_call}
 \end{figure}
 
-While each annotator works on its own to generate metadata, Sherlok let the user combines them in
+While each annotator works on its own to generate metadata, Sherlok lets the user combines them in
 \emph{pipelines} where the output of one engine is used as the input for the next one. And in order
 to reuse engines in different pipelines, Sherlok separates their definitions: engines are first
 grouped in bundles, which make the bridge between Sherlok's scripting system and the UIMA annotators
 written in Java, and then they can be used by several pipelines.
 
-The main challenge of this project was to separate the algorithms used in the engines from their
-resources, which could be as simple as a list of countries to trained models to detect part of
-speech, in bluima in order to add flexibility to the installation, update and usage of those
-resources in Sherlok.  Initially, bluima relied on a system-wide setting to locate its resources.
-However, since we wanted to make Sherlok run on as many systems as possible -- which should include
-a server architecture where a dedicated machine is in charge of storage -- we couldn't rely on this
-property any longer.  Hence, the first and main task of this project was to devise a system capable
-of working without hard coded paths.
+The main goal of this project was to decouple the algorithms used in the engines from their
+resources in bluima in order to add flexibility to the installation, update and usage of those
+resources in Sherlok. Resources could be as simple as a list of countries, but could also consist of
+large trained models (e.g. to detect part of speech) or directories of configuration files.
+Initially, bluima relied on a system-wide setting to locate its resources.  However, since we wanted
+to make Sherlok run on as many systems as possible -- which should include a server architecture
+where a dedicated machine is in charge of storage -- we couldn't rely on this property any longer.
+Hence, the first and main task of this project was to devise a system capable of working without
+hard coded paths.
 
-It was also decided that an clever system for installing and loading resources on demand (i.e.
-when loading a pipeline) should be introduced in Sherlok. And, finally, Sherlok should at least have
-a full brain regions NER and connections pipeline based on bluima tools, which includes sentence
-detection, part of speech tagging, species recognition, measures and units extraction and more.
+A second task was the design of a clever system for installing and loading resources on demand (i.e.
+when loading a pipeline). The third and final task was to port a full brain regions NER and
+connections pipeline from bluima to Sherlok, which includes sentence detection, part of speech
+tagging, species recognition, measures and units extraction and more.
 
 \TODO{include quick plan of paper}
 
 \section{Sherlok}
 
-Sherlok is an open source driven service for text information extraction initiated by Renaud
-Richardet when working on the Blue Brain Project to extend and popularise bluima engines. However,
-Sherlok is not restricted to neuroscience and as such, system administrators don't require any prior
-neuroscientific knowledge.
+Sherlok is an open source service for text information extraction created at the Blue Brain Project
+to extend and popularise bluima engines. However, Sherlok is not restricted to neuroscience and as
+such, does not require any prior neuroscientific knowledge.
+
+\TODO{text extractor}
+
+%provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
+%for the user. Text adaptors can extract more than just the raw text. For example, a PDF extractor
+%could include information about text emphasis, whether a word is part of a section title, if proper
+%name is an author or replace images by a text description.
+
 
 \subsection{REST-Based Service}
 
@@ -148,30 +153,30 @@ build queries used to communicate with Sherlok.
 
 While its implementation is written in Java, any language or tool with basic socket support can
 communicate with Sherlok and benefits from its capabilities without going through the frequent
-required hassle to build a C interface to communicate between Java and another language.
-Additionally, as a proof of concept, Sherlok provides a JavaScript, Java and Python client API to
-emit the standard REST queries in those languages. And due to the nature of REST and HTTP protocols
-they can easily be extended to support more languages.
+required hassle to build wrappers to communicate between Java and another language. Additionally,
+as a proof of concept, Sherlok provides a JavaScript, Java and Python client API to emit the
+standard REST queries in those languages. And due to the nature of REST and HTTP protocols they can
+easily be extended to support more languages.
 
-From a regular user point of view, \REST{/annotate/<pipeline~name>?text=<input~text>} is all there is to
+From an end-user point of view, \REST{/annotate/<pipeline~name>?text=<input~text>} is all there is to
 know to use a given pipeline to process some text: nothing is installed on the user side and
 everything is directly available without investing in powerful personal computer. And if the
 existing pipelines don't fit the user's needs a new pipeline can be submitted to Sherlok which will
 automatically install the required dependencies, would they be Java packages or regular files needed
-at runtime.Additionally, Sherlok comes with a web editor to easily install new pipelines, edit them
+at runtime. Additionally, Sherlok comes with a basic web editor to easily install new pipelines, edit them
 and process text without manually writing any REST queries.
 
-From the system administrator point of view, Sherlok is no less flexible or harder to use. The
+From a system administrator point of view, Sherlok is no less flexible or harder to use. The
 installation procedure is as simple as extracting an archive and launching an executable. And
 because Sherlok runs on the Java Virtual Machine (JVM), any system with a proper Java Runtime
-Environment 7 (JRE7) should be able to run Sherlok. The memory and disk requirement depends
-on the pipelines that the users will run. However, the system administrator doesn't have to play
-resources for pipelines that are not used: Sherlok easily allows obsolete pipelines or resources to
-be deleted.
+Environment 7 (JRE7) is able to run Sherlok. The memory and disk requirement depends on the
+pipelines that the users will run. However, the system administrator doesn't have to pay resources
+for pipelines that are not used: Sherlok easily allows obsolete pipelines or resources to be
+deleted.
 
-Were one server not be capable of providing enough computational power to handle all users'
-requests, several instance of Sherlok can be run in a \emph{slave} mode to balance the workload on
-several machines.
+Were one server not capable of providing enough computational power to handle all users' requests,
+several instance of Sherlok can be run in a \emph{slave} mode to balance the workload on several
+machines.
 
 Moreover, if the system administrator wants to restrict the installation or modification of
 pipelines, he can run Sherlok in \emph{sealed} mode to freeze the configuration of the service.
@@ -209,25 +214,26 @@ By default Sherlok comes with pipelines to extract information about brain regio
 and much more. The engines used in those pipelines come from bluima, which is presented in Section
 \ref{sec:bluima}.
 
-The results of annotation are presented to the used in JSON format \cite{json}. For example, the
-\ID{bluima.sentence} pipeline will give the following output when processing ``\textit{Switzerland
-is close to Italy, the land of pasta and Michelangelo. Paris is in France. And Madrid in Spain.}'':
+The results of annotation are returned from the server in JSON format \cite{json}. For example, the
+\ID{bluima.sentence} pipeline will output the following JSON when processing \TODO{use a more
+interesting sentence} ``\textit{Switzerland is close to Italy, the land of pasta and Michelangelo.
+Paris is in France. And Madrid in Spain.}'':
 
 \TODO{insert JSON output listing}
 
-For quality purpose, Sherlok also allows the user to provide tests for pipelines that can be run
+For quality purpose, Sherlok also allows the user to embed tests for pipelines that can be run
 through the \REST{/test/<pipeline name>} query in order to ensure that pipelines continue to work
 properly after updating Sherlok or the engines' dependencies.
 
 \section{Bluima, UIMA and RUTA}
 \label{sec:bluima}
 
-Bluima is an augmented collection of different libraries and UIMA \cite{uima} engines open-sourcly
-developed that the Blue Brain Project \cite{bbp} decided to aggregate together to simplify
-large-scale information extraction from the neuroscientific literature. It includes for example a
-species annotator based on the Linnaeus library \cite{linnaeus}, or the OpenNLP toolkit
-\cite{opennlp} to perform Part of Speech (PoS) tagging, sentence splitting and more. The complete
-list of subproject is detailed in Table~\ref{tab:bluima_subprojects}.
+Bluima is an open-source collection of UIMA readers \cite{uima} augmented by multiple engines
+developed at the Blue Brain Project \cite{bbp} to perform large-scale information extraction from
+the neuroscientific literature. It includes for example a species annotator based on the Linnaeus
+library \cite{linnaeus}, or the OpenNLP toolkit \cite{opennlp} to perform Part of Speech (PoS)
+tagging, sentence splitting and more. The complete list of subproject is detailed in
+Table~\ref{tab:bluima_subprojects}.
 
 \begin{table}[h]
     \centering
@@ -264,16 +270,16 @@ Initially all resources used by bluima's engines, such as models trained on the 
 \cite{genia} to tag part of speech elements, were accessed via a system wide path variable. In this
 section we will discuss the adopted strategy to improve this system and make bluima path agnostic in
 order to improve its integration in Sherlok. In the Appendix \TODO{?} we show a few other alternatives
-that were considered during this project but not good enough for our needs.
+that were also considered during this project.
 
 \subsection{Initial Situation}
 
 Both bluima and Sherlok build system are based on Apache Maven \cite{maven}, which allows developers
-to define how a Java project should be compiled, packaged, tested and much more. One of its
-important features is the ability to download dependencies from Maven Central or any other
-centralised repositories where developers can push their releases. At the beginning of this project,
-however, bluima was not yet available in Maven central which meant that to use it one had to clone
-its git repository, compile and install it.
+to define how a Java project should be compiled, packaged, tested and much more. One important
+feature of Maven is its ability to download dependencies from centralised repositories where
+developers can publish their releases. At the beginning of this project, however, bluima was not yet
+available in Maven central which meant that to use it one had to clone its git repository, compile
+and install it.
 
 Yet, publishing bluima to Maven Central would not suffice to solve a bigger issue. Bluima widely
 uses resource files in its engines and therefore needs to access those files at runtime. Originally,
@@ -438,12 +444,15 @@ to access resources. This is why it was selected and implemented in this project
 \begin{table}[h]
     \centering
     \begin{tabular}{l c c c c c}
-        Strategy & \verticaltext{Refactoring-Friendly} & \verticaltext{DRY-code} & \verticaltext{Flexibility} &
-        \verticaltext{Repackaging Cost} & \verticaltext{Runtime Safety} \\
+        Strategy & \verticaltext{Refactoring-Friendly}
+                 & \verticaltext{DRY-code}
+                 & \verticaltext{Flexibility}
+                 & \verticaltext{Repackaging Cost}
+                 & \verticaltext{Runtime Safety} \\
 
         \toprule
 
-        DKpro-Like \cite{dkpro} & \xmark & \cmark & (\cmark) & \xmark & ? \\
+        DKpro-Like \cite{dkpro} & \xmark & \cmark & (\cmark) & \xmark & \xmark \\
 
         \midrule
 
@@ -651,14 +660,17 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \bibitem{bluima}
     bluima,
+	\TODO{paper},
     \href{https://github.com/BlueBrain/bluima}{github.com/BlueBrain/bluima}
 
 \bibitem{uima}
     Apache UIMA,
+	\TODO{paper},
     \href{https://uima.apache.org/}{uima.apache.org}
 
 \bibitem{ruta}
     Apache RUTA,
+	\TODO{paper},
     \href{https://uima.apache.org/ruta.html}{uima.apache.org/ruta.html}
 
 \bibitem{maven}
@@ -675,10 +687,12 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \bibitem{linnaeus}
     Linnaeus,
+	\TODO{paper},
     \href{http://linnaeus.sourceforge.net/}{linnaeus.sourceforge.net}
 
 \bibitem{genia}
     GENIA corpus,
+	\TODO{paper},
     \href{http://www.nactem.ac.uk/aNT/genia.html}{www.nactem.ac.uk/aNT/genia.html}
 
 
