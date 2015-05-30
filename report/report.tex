@@ -15,8 +15,6 @@
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{pifont}
-\newcommand{\cmark}{\ding{51}} % check mark
-\newcommand{\xmark}{\ding{55}} % cross mark
 \usepackage{enumitem}
 \setlist{parsep=0pt,listparindent=\parindent}
 
@@ -33,6 +31,17 @@
 
 \newcommand{\tablewidth}{0.9\linewidth}
 \newcommand{\verticaltext}[1]{\rotatebox{90}{#1}}
+
+\newcommand{\CMARK}{\ding{51}} % check mark
+\newcommand{\XMARK}{\ding{55}} % cross mark
+
+\newcommand{\ONEBC}{\ding{182}} % 1 in a black circle
+\newcommand{\TWOBC}{\ding{183}} % 2 in a black circle
+
+\newcommand{\ONEWC}{\ding{192}} % 1 in a white circle
+\newcommand{\TWOWC}{\ding{193}} % 2 in a white circle
+
+\newcommand{\UNDERBRACE}[2]{\underbrace{\text{#1}}_{\mathclap{\text{#2}}}}
 
 %
 %%%
@@ -84,16 +93,16 @@ Generated metadata consists of a begin and end position in the raw text, a type 
 some cases extra attributes. It can be as simple as representing the boundaries of sentences to more
 complex notions such as brain regions.
 
-For example, annotating the following sentence for species and brain regions, generates the
-following annotations (for simplification, part of speech tags (PoS) are not shown here).
+For example, annotating the following sentence for brain regions, generates the following
+annotations (for simplification, part of speech tags (PoS) are not shown here). Additionally,
+Sherlok reports brain regions \ONEWC\; and \TWOWC\; as a co-occurrence.
 
-\[
-    \text{Sex differences in the gross size of the}
-    \overbrace{\text{rat}}^{\mathclap{\text{Species}}}
-    \underbrace{\text{neocortex}}_{\mathclap{\text{Brain Region}}} \text{.}
-\]
-
-\TODO{use more complex sentence from http://www.ncbi.nlm.nih.gov/pubmed/25609795 Table 1}
+\begin{align*}
+    & \text{Substantial numbers of tyrosine hydroxylase-immunoreactive cells in}\\
+    & \text{the } \UNDERBRACE{dorsal raphe nucleus}{Brain Region \ONEWC}
+      \text{ were found to project to the } \UNDERBRACE{nucleus accumbens}{Brain Region \TWOWC}
+      \text{.}
+\end{align*}
 
 Figure \ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
 point of view by Sherlok.
@@ -133,14 +142,6 @@ tagging, species recognition, measures and units extraction and more.
 Sherlok is an open source service for text information extraction created at the Blue Brain Project
 to extend and popularise bluima engines. However, Sherlok is not restricted to neuroscience and as
 such, does not require any prior neuroscientific knowledge.
-
-\TODO{text extractor}
-
-%provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
-%for the user. Text adaptors can extract more than just the raw text. For example, a PDF extractor
-%could include information about text emphasis, whether a word is part of a section title, if proper
-%name is an author or replace images by a text description.
-
 
 \subsection{REST-Based Service}
 
@@ -452,27 +453,27 @@ to access resources. This is why it was selected and implemented in this project
 
         \toprule
 
-        DKpro-Like \cite{dkpro} & \xmark & \cmark & (\cmark) & \xmark & \xmark \\
+        DKpro-Like \cite{dkpro} & \XMARK & \CMARK & (\CMARK) & \XMARK & \XMARK \\
 
         \midrule
 
-        Proxy-Based A & \xmark & \cmark & \xmark & \xmark & \cmark \\
+        Proxy-Based A & \XMARK & \CMARK & \XMARK & \XMARK & \CMARK \\
 
         \midrule
 
-        Proxy-Based B & \xmark & \cmark & \xmark & \cmark & (\cmark) \\
+        Proxy-Based B & \XMARK & \CMARK & \XMARK & \CMARK & (\CMARK) \\
 
         \midrule
 
-        Proxy-Based C & \xmark & \xmark & \xmark & \xmark & \cmark \\
+        Proxy-Based C & \XMARK & \XMARK & \XMARK & \XMARK & \CMARK \\
 
         \midrule
 
-        Proxy-Based D & \xmark & \cmark & \xmark & \cmark & \xmark \\
+        Proxy-Based D & \XMARK & \CMARK & \XMARK & \CMARK & \XMARK \\
 
         \midrule
 
-        Adopted Solution & \cmark & \cmark \cmark & \cmark \cmark & \cmark & \xmark \\
+        Adopted Solution & \CMARK & \CMARK \CMARK & \CMARK \CMARK & \CMARK & \XMARK \\
 
         \bottomrule
     \end{tabular}
@@ -647,6 +648,13 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \TODO{ideas? support for more variable url pattern (svn, ...) }
 \TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven jar (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
+
+\TODO{text extractor}
+
+%provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
+%for the user. Text adaptors can extract more than just the raw text. For example, a PDF extractor
+%could include information about text emphasis, whether a word is part of a section title, if proper
+%name is an author or replace images by a text description.
 
 \begin{thebibliography}{99}
 
