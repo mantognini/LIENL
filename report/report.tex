@@ -209,10 +209,10 @@ such, does not require any prior neuroscientific knowledge.
 
 \subsection{REST-Based Service}
 
-The service provided through a classic Representational State Transfer (REST) API can be installed
-in-house by system administrators to match the specific needs of researchers. From the user
-perspective, only a basic understanding of the Hypertext Transfer Protocol (HTTP) is required to
-build queries used to communicate with Sherlok.
+The service, provided through a REST API, can be installed in-house by system administrators to
+match the specific needs of researchers. From the user perspective, only a basic understanding of
+the Hypertext Transfer Protocol (HTTP) is required to build queries used to communicate with
+Sherlok.
 
 %\begin{table}[h]
     %\centering
@@ -321,11 +321,11 @@ for pipelines that are not used: Sherlok easily allows obsolete pipelines or res
 deleted.
 
 Were one server not capable of providing enough computational power to handle all users' requests,
-several instance of Sherlok can be run in a \emph{slave} mode to balance the workload on several
+several instance of Sherlok could be run in a \emph{slave} mode to balance the workload on several
 machines.
 
-Moreover, if the system administrator wants to restrict the installation or modification of
-pipelines, he can run Sherlok in \emph{sealed} mode to freeze the configuration of the service.
+Moreover, if the system administrator wanted to restrict the installation or modification of
+pipelines, he could run Sherlok in \emph{sealed} mode to freeze the configuration of the service.
 While Sherlok doesn't have any particular Access Control List (ACL) mechanism to support
 fine-grained access control and restrict users permissions on a case by case basis, custom ACL
 system can easily be built on top of Sherlok: a simple proxy program can integrate restricted access
@@ -344,7 +344,7 @@ point of view by Sherlok.
 
 \subsection{UIMA-Based Configurable Service}
 
-Internally, Sherlok will process the input text through Unstructured Information Management
+Internally, Sherlok processes the input text through Unstructured Information Management
 Architecture (UIMA)~\cite{uima} engines or more generally through a Rule-based Text Annotation
 (RUTA) scripts~\cite{ruta}. Both RUTA and UIMA are projects of the Apache Software Foundation
 \cite{apachefundation} focusing in analysing large volumes of unstructured information in order to
@@ -354,12 +354,14 @@ UIMA, it could be extended in the future to also support the C++ or Scaleout Fra
 In order to let users who are not Java developers combine engines together, Sherlok has a Java
 agnostic configuration system that separate the definition of engines from their usage in pipelines.
 
+Those configuration files make use of two concepts:
+
 \begin{description}
-    \item[Bundles] The user lists the UIMA engines that he wants to use in \emph{bundles} by specifying
-        the Java package dependencies, the required resource files and configure the different
-        parameters of the engines. To simplify installing resources, Sherlok supports download at
-        execution time of Git repositories or HTTP(S) URLs, but also lets the user specify local
-        path on the server if needed.
+    \item[Bundles] The user lists the UIMA engines that he wants to use in \emph{bundles} by
+        specifying the Java package dependencies, the required resource files and configure the
+        different parameters of the engines. To simplify installing resources, Sherlok supports
+        download at execution time of Git repositories or HTTP(S) URLs, but also lets the user
+        specify local path on the server if needed.
     \item[Pipelines] The user writes the RUTA script which can be as simple as chaining engines from
         the bundles configuration files in \emph{pipelines}. The whole features set of RUTA is
         available to the user so that simple scripts don't require any Java implementation from the
@@ -974,6 +976,10 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
     by R. Richardet,
     Proceedings of the 3rd Workshop on Unstructured Information Management Architecture, Darmstadt,
     Germany, 2013, pp. 34–41, Gesellschaft für Sprachtechnologie und Computerlinguistik.
+
+\bibitem{json}
+    JSON format,
+    \href{http://json.org/}{json.org}
 
 \bibitem{uima}
     Apache UIMA,
