@@ -10,15 +10,74 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{multirow}
 \usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
 \usepackage{ragged2e}  % for '\RaggedRight' macro (allows hyphenation)
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{pifont}
 \usepackage{enumitem}
+%\usepackage{bera}
+\usepackage{xcolor}
+\usepackage{listings}
+
 \setlist{parsep=0pt,listparindent=\parindent}
 
 \newcommand{\sectionbreak}{\clearpage}
+
+%%% JSON LISTING
+
+\colorlet{JSONPUNCTCOLOR}{red!60!black}
+\definecolor{JSONBACKGROUNDCOLOR}{HTML}{EEEEEE}
+\definecolor{JSONDELIMCOLOR}{RGB}{20,105,176}
+\colorlet{JSONNUMBERCOLOR}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    captionpos=b,
+    basicstyle=\normalfont\ttfamily\small,
+    %numbers=left,
+    %numberstyle=\scriptsize,
+    %stepnumber=1,
+    %numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{JSONBACKGROUNDCOLOR},
+    literate=
+     *{0}{{{\color{JSONNUMBERCOLOR}0}}}{1}
+      {1}{{{\color{JSONNUMBERCOLOR}1}}}{1}
+      {2}{{{\color{JSONNUMBERCOLOR}2}}}{1}
+      {3}{{{\color{JSONNUMBERCOLOR}3}}}{1}
+      {4}{{{\color{JSONNUMBERCOLOR}4}}}{1}
+      {5}{{{\color{JSONNUMBERCOLOR}5}}}{1}
+      {6}{{{\color{JSONNUMBERCOLOR}6}}}{1}
+      {7}{{{\color{JSONNUMBERCOLOR}7}}}{1}
+      {8}{{{\color{JSONNUMBERCOLOR}8}}}{1}
+      {9}{{{\color{JSONNUMBERCOLOR}9}}}{1}
+      {:}{{{\color{JSONPUNCTCOLOR}{:}}}}{1}
+      {,}{{{\color{JSONPUNCTCOLOR}{,}}}}{1}
+      {\{}{{{\color{JSONDELIMCOLOR}{\{}}}}{1}
+      {\}}{{{\color{JSONDELIMCOLOR}{\}}}}}{1}
+      {[}{{{\color{JSONDELIMCOLOR}{[}}}}{1}
+      {]}{{{\color{JSONDELIMCOLOR}{]}}}}{1},
+}
+
+%%% RUTA LISTING
+
+\definecolor{RUTABACKGROUNDCOLOR}{HTML}{EEEEEE}
+
+\lstdefinelanguage{ruta}{
+    captionpos=b,
+    basicstyle=\normalfont\ttfamily\small,
+    %numbers=left,
+    %numberstyle=\scriptsize,
+    %stepnumber=1,
+    %numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{RUTABACKGROUNDCOLOR},
+}
 
 %%%
 % Commands
@@ -30,7 +89,8 @@
 \newcommand{\REST}[1]{\textsf{#1}}
 
 \newcommand{\tablewidth}{0.9\linewidth}
-\newcommand{\verticaltext}[1]{\rotatebox{90}{#1}}
+\newcommand{\VERTICALTEXT}[1]{\rotatebox{90}{#1}}
+\newcommand{\MULTIROW}[2]{\multirow{#1}{*}{\vbox{#2}}}
 
 \newcommand{\CMARK}{\ding{51}} % check mark
 \newcommand{\XMARK}{\ding{55}} % cross mark
@@ -89,12 +149,12 @@ is an open source project developed at the Blue Brain Project and consists of a 
 UIMA-based \emph{annotators} (also called \emph{engines}) \cite{uima} that generate metadata from
 the input text. We will focus on those specific annotators for this project.
 
-Generated metadata consists of a begin and end position in the raw text, a type identifier and in
-some cases extra attributes. It can be as simple as representing the boundaries of sentences to more
-complex notions such as brain regions.
+Generated metadata consists of a collection of \emph{annotations}. Each annotation has a begin and
+end position in the raw text, a type identifier and in some cases extra attributes. It can be as
+simple as representing the boundaries of sentences to more complex notions such as brain regions.
 
 For example, annotating the following sentence for brain regions, generates the following
-annotations (for simplification, part of speech tags (PoS) are not shown here). Additionally,
+annotations (for simplification, part of speech (PoS) tags are not shown here). Additionally,
 Sherlok reports brain regions \ONEWC\; and \TWOWC\; as a co-occurrence.
 
 \begin{align*}
@@ -109,7 +169,7 @@ point of view by Sherlok.
 
 \begin{figure}
     \centering
-    \includegraphics[width=200pt]{res/sherlok_basic_rest_call.png}
+    \includegraphics[width=0.7\linewidth]{res/sherlok_basic_rest_call.png}
     \caption{Part of Speech Pipeline}
     \label{fig:sherlok_basic_rest_call}
 \end{figure}
@@ -150,7 +210,82 @@ in-house by system administrators to match the specific needs of researchers. Fr
 perspective, only a basic understanding of the Hypertext Transfer Protocol (HTTP) is required to
 build queries used to communicate with Sherlok.
 
-\TODO{insert table of queries}
+%\begin{table}[h]
+    %\centering
+    %\begin{tabularx}{1.2\linewidth}{l l >{\hsize=2cm}X Y}
+                %&       & \MULTIROW{2}{Additional Parameters}   &           \\
+        %Method  & Path  &                                       & Action    \\
+
+        %\toprule
+
+        %GET  & \REST{/annotate/<pipeline>}      & text          &
+            %\MULTIROW{2}{Annotates the given text with the selected pipeline (the pipeline version is
+            %optional).} \\
+             %&                                  & version (opt) &  \\
+        %\\ \\ % fix v-spacing
+
+        %\midrule
+
+        %POST & \REST{/annotate/<pipeline>}      & text          &
+            %\MULTIROW{2}{Like the previous one, but the text (and the optional pipeline version) is
+            %posted in JSON format.} \\
+             %&                                  & version (opt) &  \\
+        %\\ \\ % fix v-spacing
+
+        %\midrule
+
+        %GET  & \REST{/pipelines}                &               &
+            %\MULTIROW{1}{Lists the installed pipelines.} \\
+        %% \\ % fix y-spacing
+
+        %\midrule
+
+        %GET  & \multicolumn{2}{ l }{\REST{/pipelines/<pipeline>/<version>}} &
+            %\MULTIROW{1}{Downloads the given version of the mentioned pipeline definition.}  \\
+        %\\ \\ % fix y-spacing
+
+        %\midrule
+
+        %POST & \REST{/pipeline}                 &               &
+            %\MULTIROW{1}{Install the pipeline definition present in the body of the request} \\
+        %\\ \\ % fix y-spacing
+
+        %\midrule
+
+        %DELETE & \REST{/pipeline/<pipeline>/<version>}  &       &
+            %\MULTIROW{1}{Uninstall the given version of the mentioned pipeline} \\
+        %\\ % fix y-spacing
+
+        %\midrule
+
+        %POST & \REST{/test}                     & pipeline      &
+            %\MULTIROW{1}{Runs the tests of the (temporary) pipeline defined in the body of the request.} \\
+        %\\ \\ % fix y-spacing
+
+        %\midrule
+
+        %GET  & \REST{/test/<pipeline>}          & version (opt) &
+            %\MULTIROW{1}{Runs the tests for the given installed pipeline.} \\
+        %\\ % fix y-spacing
+
+        %\midrule
+
+        %GET  & \REST{/reload}                   &               &
+            %\MULTIROW{1}{Reloads Sherlok's settings.} \\
+        %% \\ % fix y-spacing
+
+        %\midrule
+
+        %\bottomrule
+    %\end{tabularx}
+    %\caption{\TODO{caption me}}
+    %\label{tab:sherlok_rest_api}
+%\end{table}
+
+%\TODO{add resources, cleaning and bundle requests}
+
+%\TODO{actually, this table should be in the doc, not here. Here, just explain the main ones
+%(annotate, test, install and remove)}
 
 While its implementation is written in Java, any language or tool with basic socket support can
 communicate with Sherlok and benefits from its capabilities without going through the frequent
@@ -159,13 +294,19 @@ as a proof of concept, Sherlok provides a JavaScript, Java and Python client API
 standard REST queries in those languages. And due to the nature of REST and HTTP protocols they can
 easily be extended to support more languages.
 
-From an end-user point of view, \REST{/annotate/<pipeline~name>?text=<input~text>} is all there is to
-know to use a given pipeline to process some text: nothing is installed on the user side and
-everything is directly available without investing in powerful personal computer. And if the
-existing pipelines don't fit the user's needs a new pipeline can be submitted to Sherlok which will
-automatically install the required dependencies, would they be Java packages or regular files needed
-at runtime. Additionally, Sherlok comes with a basic web editor to easily install new pipelines, edit them
-and process text without manually writing any REST queries.
+From an end-user point of view, the HTTP request
+
+\[
+    \REST{GET /annotate/<pipeline>?text=<input>}
+\]
+
+is all there is to know to use a given pipeline to process some text: nothing is installed on the
+user side; instead everything is directly available on Sherlok's server without investing in
+powerful personal computers. And if the existing pipelines don't fit the user's needs a new pipeline
+can be submitted to Sherlok which will automatically install the required dependencies, would they
+be Java packages or regular files needed at runtime. Additionally, Sherlok comes with a basic web
+editor to easily install new pipelines, edit them and process text without manually writing any REST
+queries.
 
 From a system administrator point of view, Sherlok is no less flexible or harder to use. The
 installation procedure is as simple as extracting an archive and launching an executable. And
@@ -215,15 +356,76 @@ By default Sherlok comes with pipelines to extract information about brain regio
 and much more. The engines used in those pipelines come from bluima, which is presented in Section
 \ref{sec:bluima}.
 
-The results of annotation are returned from the server in JSON format \cite{json}. For example, the
-\ID{bluima.sentence} pipeline will output the following JSON when processing \TODO{use a more
-interesting sentence} ``\textit{Switzerland is close to Italy, the land of pasta and Michelangelo.
-Paris is in France. And Madrid in Spain.}'':
+The annotations produced by a pipeline are returned from the server in JSON format \cite{json}. For
+example, Listing \ref{lst:json_sententence_detection} highlights the annotations in JSON format
+produced by the \ID{bluima.sentence} pipeline when processing ``\textit{Terminologies which lack
+semantic connectivity hamper the effective search in biomedical fact databases and document
+retrieval systems. We here focus on the integration of two such isolated resources, the term lists
+from the protein fact database UNIPROT and the indexing vocabulary MESH from the bibliographic
+database MEDLINE.}''
 
-\TODO{insert JSON output listing}
+In this listing are displayed three annotations: one \ID{DocumentAnnotation}, which provides insight
+on the language of the processed document, and two \ID{Sentence}, each of which have a general
+\ID{componentId} representing which NLP component has been used to derive the annotation.
+Additionally, all three annotations have information about the corresponding range of the text that
+they cover.
+
+% The following listing is too big to fit properly. Also there are so many things that are not
+% really interesting for the reader.
+%\begin{lstlisting}[language=json,firstnumber=1]
+%{"_context" : {
+    %"_types" : {
+      %"DocumentAnnotation" : {"_id" : "uima.tcas.DocumentAnnotation",
+        %"_feature_types" : {"sofa" : "_ref" } },
+      %"Sentence" : {"_id" : "de.julielab.jules.types.Sentence",
+        %"_feature_types" : {"sofa" : "_ref" } },
+      %"Sofa" : {"_id" : "uima.cas.Sofa",
+        %"_feature_types" : {"sofaArray" : "_ref" } },
+      %"Annotation" : {"_id" : "uima.tcas.Annotation",
+        %"_feature_types" : {"sofa" : "_ref" },
+        %"_subtypes" : ["DocumentAnnotation",  "Annotation" ] },
+      %"AnnotationBase" : {"_id" : "uima.cas.AnnotationBase",
+        %"_feature_types" : {"sofa" : "_ref" },
+        %"_subtypes" : ["Annotation" ] },
+      %"TOP" : {"_id" : "uima.cas.TOP",
+        %"_subtypes" : ["AnnotationBase",  "Sofa" ] },
+      %"Annotation" : {"_id" : "de.julielab.jules.types.Annotation",
+        %"_feature_types" : {"sofa" : "_ref" },
+        %"_subtypes" : ["Sentence" ] } } },
+  %"_views" : {
+    %"_InitialView" : {
+      %"DocumentAnnotation" : [
+        %{"sofa" : 1,  "begin" : 0,  "end" : 328,  "language" : "en" } ],
+      %"Sentence" : [
+        %{"sofa" : 1,  "begin" : 0,  "end" : 135,  "componentId" : "de.julielab.types.OpenNLPSentenceDetector" },
+        %{"sofa" : 1,  "begin" : 136,  "end" : 328,  "componentId" : "de.julielab.types.OpenNLPSentenceDetector" } ] } },
+  %"_referenced_fss" : {
+    %"1" : {"_type" : "Sofa",  "sofaNum" : 1,  "sofaID" : "_InitialView",  "mimeType" : "text",  "sofaString" : "Terminologies which lack semantic connectivity hamper the effective search in biomedical fact databases and document retrieval systems. We here focus on the integration of two such isolated resources, the term lists from the protein fact database UNIPROT and the indexing vocabulary MESH from the bibliographic database MEDLINE." } } ,
+  %"_stats" : {
+    %"_pipeline_resolution": 3285,
+    %"_annotation": 435
+  %}
+%}
+%\end{lstlisting}
+
+\begin{lstlisting}[float,language=json,
+                   caption=Excerpt of JSON output for sentence detection.,
+                   label=lst:json_sententence_detection]
+"DocumentAnnotation" : [
+  { "begin" : 0,    "end" : 328,  "language" : "en" }
+],
+"Sentence" : [
+  { "begin" : 0,    "end" : 135,
+    "componentId" :
+        "de.julielab.types.OpenNLPSentenceDetector" },
+  { "begin" : 136,  "end" : 32
+    "componentId" :
+        "de.julielab.types.OpenNLPSentenceDetector" }
+]
+\end{lstlisting}
 
 For quality purpose, Sherlok also allows the user to embed tests for pipelines that can be run
-through the \REST{/test/<pipeline name>} query in order to ensure that pipelines continue to work
+through the \REST{GET /test/<pipeline>} query in order to ensure that pipelines continue to work
 properly after updating Sherlok or the engines' dependencies.
 
 \section{Bluima, UIMA and RUTA}
@@ -232,13 +434,13 @@ properly after updating Sherlok or the engines' dependencies.
 Bluima is an open-source collection of UIMA readers \cite{uima} augmented by multiple engines
 developed at the Blue Brain Project \cite{bbp} to perform large-scale information extraction from
 the neuroscientific literature. It includes for example a species annotator based on the Linnaeus
-library \cite{linnaeus}, or the OpenNLP toolkit \cite{opennlp} to perform Part of Speech (PoS)
-tagging, sentence splitting and more. The complete list of subproject is detailed in
+library \cite{linnaeus}, or the OpenNLP toolkit \cite{opennlp} to perform Part of Speech tagging,
+sentence splitting and more. The complete list of subprojects is detailed in
 Table~\ref{tab:bluima_subprojects}.
 
 \begin{table}[h]
     \centering
-    \begin{tabularx}{\tablewidth}{@{} c Y @{}} % no margin at extremum
+    \begin{tabularx}{\tablewidth}{@{} l Y @{}} % no margin at extremum
         \toprule
 
         OpenNLP \cite{opennlp} & a machine learning based toolkit for the processing of natural
@@ -259,11 +461,90 @@ Table~\ref{tab:bluima_subprojects}.
     \label{tab:bluima_subprojects}
 \end{table}
 
-\TODO{explain how UIMA works (with a figure of how an annotator works)}
+UIMA-based applications are structured into components called \emph{analysis engines}, or
+\emph{annotators}, which produce metadata in form of annotations. The implementation of such engines
+can be either written in C++ or in Java, however C++ development seems rather marginal compared to
+the amount of available libraries and tool for UIMA in Java, for which several implementation
+strategies have been devised over the years. The most modern and popular API used to build
+components is \emph{uimaFIT} \cite{uimafit}: it aims to simplify the archaic XML description used in
+earlier UIMA APIs to configure (C++ or Java) engines by writing both the implementation and
+configuration of engines' parameters directly in Java. While Sherlok is compatible with any
+UIMA-compatible technology, we focus on the uimaFIT approach in what follows.
 
-\TODO{explain what RUTA is}
+At runtime, an annotator has mainly two actions: initialisation and processing. Annotations produced
+by engines is stored in a Common Analysis System (CAS) \cite{cas} general purpose data structure,
+which allows the representation of objects with single-inheritance hierarchy, properties and values.
+And in a pipeline of annotators, a single CAS instance is passed from one engine to the next so that
+the data from previous engines can be used to filter data, augment existing annotations or produce
+new ones.
 
-\TODO{explain how Sherlok use that}
+Figure \ref{fig:pos_pipeline_uimafit} depicts how uimaFIT-based applications handle pipelines such
+as PoS tagging: first, the text to be processed is loaded into a CAS instance, then engines are
+created through uimaFIT factory system with the appropriate configuration settings and finally the
+pipeline of engines is run.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\linewidth]{res/uimafit.png}
+    \caption{Part of Speech Tagging uimaFIT pipeline}
+    \label{fig:pos_pipeline_uimafit}
+\end{figure}
+
+% TODO Doc
+%These two tasks are modeled by implementing the \ID{initialize} and \ID{process}, respectively,
+%methods of the Java interface \ID{AnalysisComponent}. +
+%org.apache.uima.fit.component.JCasAnnotator_ImplBase
+
+While uimaFIT is very convenient when writing an UIMA application that is entirely written in Java,
+it becomes much more complex when we want to include a flexible external configuration as we do with
+Sherlok. Moreover, and especially for simple pipelines, sometimes implementing a Java annotator
+requires more boilerplate code than the actual algorithm.
+
+To workaround this, an application can use the RUTA language \cite{ruta}, which is an imperative
+rule language extended with scripting elements that can also be used to define pipelines. To
+illustrate this, Listing \ref{lst:ruta_example_dog} shows a very simple script that annotates
+``dog'' as an ``Animal'' and Listing \ref{lst:ruta_example_pos} shows how RUTA can be used to run
+the PoS pipeline from Figure \ref{fig:pos_pipeline_uimafit}. For this last example, unlike with
+uimaFIT, the XML description of engines' parameters need to be available at runtime as it is not
+embedded in the script itself.
+
+\begin{lstlisting}[float,language=ruta,
+                   caption=A basic RUTA script,
+                   label=lst:ruta_example_dog]
+DECLARE Animal;
+W{REGEXP("dog") -> MARK(Animal)};
+\end{lstlisting}
+
+\begin{lstlisting}[float,language=ruta,
+                   caption=PoS pipeline written in RUTA,
+                   label=lst:ruta_example_pos]
+ENGINE SentenceAnnotator;
+ENGINE TokenAnnotator;
+ENGINE PosTagAnnotator;
+
+Document{-> EXEC(SentenceAnnotator)};
+Document{-> EXEC(TokenAnnotator)};
+Document{-> EXEC(PosTagAnnotator)};
+\end{lstlisting}
+
+Fortunately, uimaFIT provides tools to generate XML descriptions for classic engines so that we can
+use RUTA to generate pipeline automatically for the user from a simpler description of the engines'
+parameters than raw XML as follows:
+
+\begin{enumerate}
+    \item The user defines the engines with their parameters inside bundles;
+    \item Then he defines the order of engines in a given pipeline;
+    \item When the user wants to annotate a given text with the pipeline, Sherlok converts the
+        engines, with their configured parameters, used by the pipeline into XML descriptions;
+    \item Sherlok generates a RUTA script that uses the engine descriptions in the order of the
+        pipeline;
+    \item And finally, Sherlok runs the RUTA script and return the annotations back to the user.
+\end{enumerate}
+
+Additionally, Sherlok allows users to use the full RUTA language in pipelines to create even more
+powerful tools. And in order to make configuration more flexible, as we will see in Section
+\ref{sec:config_in_sherlok}, the user has the possibility to user configuration variables in bundles
+or pipelines to download automatically remote resources.
 
 \section{Packaging Strategy}
 
@@ -445,11 +726,11 @@ to access resources. This is why it was selected and implemented in this project
 \begin{table}[h]
     \centering
     \begin{tabular}{l c c c c c}
-        Strategy & \verticaltext{Refactoring-Friendly}
-                 & \verticaltext{DRY-code}
-                 & \verticaltext{Flexibility}
-                 & \verticaltext{Repackaging Cost}
-                 & \verticaltext{Runtime Safety} \\
+        Strategy & \VERTICALTEXT{Refactoring-Friendly}
+                 & \VERTICALTEXT{DRY-code}
+                 & \VERTICALTEXT{Flexibility}
+                 & \VERTICALTEXT{Repackaging Cost}
+                 & \VERTICALTEXT{Runtime Safety} \\
 
         \toprule
 
@@ -496,6 +777,7 @@ to access resources. This is why it was selected and implemented in this project
 \TODO{Git submodules for resources for bluima}
 
 \subsection{Configuration in Sherlok}
+\label{sec:config_in_sherlok}
 
 \TODO{where? -> pipeline + bundle (examples) + file structure}
 
@@ -520,7 +802,9 @@ to access resources. This is why it was selected and implemented in this project
 
 \TODO{find better title}
 
-The initial idea was to base the system on Apache Maven \TODO{ref}. However, while implementing the strategy described below we realised that it was not as flexible as predicted. A better alternative is presented in Section \ref{sec:packaging2}. This section describes our first approach.
+The initial idea was to base the system on Apache Maven \TODO{ref}. However, while implementing the
+strategy described below we realised that it was not as flexible as predicted. A better alternative
+is presented in Section \TODO{ref{sec:packaging2}}. This section describes our first approach.
 
 One of the first objective of this project was the disassociation of algorithms (engine annotators) and their different resources (model files, configuration files) and devise a packaging system, based on Apache Maven, that would be flexible while being simple and convenient to use and let the user define pipelines using specific annotators and models.
 
@@ -676,6 +960,15 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 	\TODO{paper},
     \href{https://uima.apache.org/}{uima.apache.org}
 
+\bibitem{uimafit}
+    Apache uimaFIT,
+    \href{https://uima.apache.org/uimafit.html}{uima.apache.org/uimafit.html}
+
+\bibitem{cas}
+    Design and implementation of the UIMA Common Analysis System,
+    by T. Götz and O. Suhre,
+    IBM SYSTEMS JOURNAL, VOL 43, NO 3, 2004
+
 \bibitem{ruta}
     Apache RUTA,
 	\TODO{paper},
@@ -709,6 +1002,7 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 \begin{appendix}
   \listoffigures
   \listoftables
+  \lstlistoflistings
 \end{appendix}
 
 \end{document}

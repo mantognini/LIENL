@@ -1,0 +1,59 @@
+@startuml
+
+skinparam sequence {
+    ArrowColor DeepSkyBlue
+    LifeLineBorderColor DeepSkyBlue
+    LifeLineBackgroundColor #A9DCDF
+    
+    ParticipantBorderColor Black
+    ParticipantBackgroundColor Black
+'   ParticipantFontName Impact
+'   ParticipantFontSize 17
+'   ParticipantFontColor #A9DCDF
+    
+    ActorBorderColor Black
+    ActorBackgroundColor #A9DCDF
+'   ActorFontColor DeepSkyBlue
+'   ActorFontSize 17
+'   ActorFontName Aapex
+}
+
+database Application #LightCyan
+participant CAS #LightCyan
+participant EngineFactory #LightCyan
+participant SimplePipeline #LightCyan
+
+activate Application
+
+group PoS Pipeline
+
+Application -> CAS : createFrom(text)
+activate CAS
+CAS -> Application : CAS instance
+deactivate CAS
+
+Application -> EngineFactory : instantiate(SentenceSplitter, model = PennBio)
+activate EngineFactory
+EngineFactory -> Application : instance of SentenceSplitter engine
+deactivate EngineFactory
+
+Application -> EngineFactory : instance(Tokenizer, model = PennBio)
+activate EngineFactory
+EngineFactory -> Application : instance of Tokenizer engine
+deactivate EngineFactory
+
+Application -> EngineFactory : instance(PoSTagger, model = PennBio)
+activate EngineFactory
+EngineFactory -> Application : instance of PoSTagger engine
+deactivate EngineFactory
+
+Application -> SimplePipeline : runPipeline(CAS instance, engines)
+activate SimplePipeline
+SimplePipeline -> Application : augmented CAS with annotations
+deactivate SimplePipeline
+
+end
+
+deactivate Application
+
+@enduml
