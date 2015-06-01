@@ -135,22 +135,22 @@
 
 \section{Introduction}
 
-The neuroscientists at the Blue Brain Project \cite{bbp}, in their quest to model the human brain,
+The neuroscientists at the Blue Brain Project~\cite{bbp}, in their quest to model the human brain,
 have to understand the interactions between the different components of the brain such as cells or
 brain regions and connect their effects with other parts of the brain or other organs.  However,
 since the amount of information is colossal and is obviously not memorisable by individual human
 being or even by a team of researchers, tools need to be created in order to extract the relevant
 data from the scientific literature in a precise and fast manner.
 
-Sherlok \cite{sherlok} was created to solve this large-scale data mining problem. Based on a
+Sherlok~\cite{sherlok} was created to solve this large-scale data mining problem. Based on a
 Representational State Transfer (REST) API, Sherlok is a service capable of extracting information
 relevant to specific situation directly from a given text. It is designed to be both user- and
 developer-friendly and flexible so that it can analyse, via standard REST requests, any kind of
 input text formats.
 
-Currently, the main dependency of Sherlok is, but is not restricted to, bluima \cite{bluima}, which
+Currently, the main dependency of Sherlok is, but is not restricted to, bluima~\cite{bluima}, which
 is an open source project developed at the Blue Brain Project and consists of a large collection of
-UIMA-based \emph{annotators} (also called \emph{engines}) \cite{uima} that generate metadata from
+UIMA-based \emph{annotators} (also called \emph{engines})~\cite{uima} that generate metadata from
 the input text. We will focus on those specific annotators for this project.
 
 Generated metadata consists of a collection of \emph{annotations}. Each annotation has a begin and
@@ -335,8 +335,8 @@ requests before Sherlok can process them.
 \subsection{UIMA-Based Configurable Service}
 
 Internally, Sherlok will process the input text through Unstructured Information Management
-Architecture (UIMA) \cite{uima} engines or more generally through a Rule-based Text Annotation
-(RUTA) scripts \cite{ruta}. Both RUTA and UIMA are projects of the Apache Software Foundation
+Architecture (UIMA)~\cite{uima} engines or more generally through a Rule-based Text Annotation
+(RUTA) scripts~\cite{ruta}. Both RUTA and UIMA are projects of the Apache Software Foundation
 \cite{apachefundation} focusing in analysing large volumes of unstructured information in order to
 discover knowledge that is relevant to an end user. While Sherlok focuses on the Java Frameworks for
 UIMA, it could be extended in the future to also support the C++ or Scaleout Frameworks.
@@ -360,7 +360,7 @@ By default Sherlok comes with pipelines to extract information about brain regio
 and much more. The engines used in those pipelines come from bluima, which is presented in Section
 \ref{sec:bluima}.
 
-The annotations produced by a pipeline are returned from the server in JSON format \cite{json}. For
+The annotations produced by a pipeline are returned from the server in JSON format~\cite{json}. For
 example, Listing \ref{lst:json_sententence_detection} highlights the annotations in JSON format
 produced by the \ID{bluima.sentence} pipeline when processing ``\textit{Terminologies which lack
 semantic connectivity hamper the effective search in biomedical fact databases and document
@@ -435,10 +435,10 @@ properly after updating Sherlok or the engines' dependencies.
 \section{Bluima, UIMA and RUTA}
 \label{sec:bluima}
 
-Bluima is an open-source collection of UIMA readers \cite{uima} augmented by multiple engines
-developed at the Blue Brain Project \cite{bbp} to perform large-scale information extraction from
+Bluima is an open-source collection of UIMA readers~\cite{uima} augmented by multiple engines
+developed at the Blue Brain Project~\cite{bbp} to perform large-scale information extraction from
 the neuroscientific literature. It includes for example a species annotator based on the Linnaeus
-library \cite{linnaeus}, or the OpenNLP toolkit \cite{opennlp} to perform Part of Speech tagging,
+library~\cite{linnaeus}, or the OpenNLP toolkit~\cite{opennlp} to perform Part of Speech tagging,
 sentence splitting and more. The complete list of subprojects is detailed in
 Table~\ref{tab:bluima_subprojects}.
 
@@ -447,12 +447,12 @@ Table~\ref{tab:bluima_subprojects}.
     \begin{tabularx}{\tablewidth}{@{} l Y @{}} % no margin at extremum
         \toprule
 
-        OpenNLP \cite{opennlp} & a machine learning based toolkit for the processing of natural
+        OpenNLP~\cite{opennlp} & a machine learning based toolkit for the processing of natural
         language text \\
 
         \midrule
 
-        Linnaeus \cite{linnaeus} & a general-purpose dictionary matching software, capable of
+        Linnaeus~\cite{linnaeus} & a general-purpose dictionary matching software, capable of
         processing multiple types of document formats in the biomedical domain \\
 
         \midrule
@@ -470,13 +470,13 @@ UIMA-based applications are structured into components called \emph{analysis eng
 can be either written in C++ or in Java, however C++ development seems rather marginal compared to
 the amount of available libraries and tool for UIMA in Java, for which several implementation
 strategies have been devised over the years. The most modern and popular API used to build
-components is \emph{uimaFIT} \cite{uimafit}: it aims to simplify the archaic XML description used in
+components is \emph{uimaFIT}~\cite{uimafit}: it aims to simplify the archaic XML description used in
 earlier UIMA APIs to configure (C++ or Java) engines by writing both the implementation and
 configuration of engines' parameters directly in Java. While Sherlok is compatible with any
 UIMA-compatible technology, we focus on the uimaFIT approach in what follows.
 
 At runtime, an annotator has mainly two actions: initialisation and processing. Annotations produced
-by engines is stored in a Common Analysis System (CAS) \cite{cas} general purpose data structure,
+by engines is stored in a Common Analysis System (CAS)~\cite{cas} general purpose data structure,
 which allows the representation of objects with single-inheritance hierarchy, properties and values.
 And in a pipeline of annotators, a single CAS instance is passed from one engine to the next so that
 the data from previous engines can be used to filter data, augment existing annotations or produce
@@ -504,7 +504,7 @@ it becomes much more complex when we want to include a flexible external configu
 Sherlok. Moreover, and especially for simple pipelines, sometimes implementing a Java annotator
 requires more boilerplate code than the actual algorithm.
 
-To workaround this, an application can use the RUTA language \cite{ruta}, which is an imperative
+To workaround this, an application can use the RUTA language~\cite{ruta}, which is an imperative
 rule language extended with scripting elements that can also be used to define pipelines. To
 illustrate this, Listing \ref{lst:ruta_example_dog} shows a very simple script that annotates
 ``dog'' as an ``Animal'' and Listing \ref{lst:ruta_example_pos} shows how RUTA can be used to run
@@ -560,7 +560,7 @@ that were also considered during this project.
 
 \subsection{Initial Situation}
 
-Both bluima and Sherlok build system are based on Apache Maven \cite{maven}, which allows developers
+Both bluima and Sherlok build system are based on Apache Maven~\cite{maven}, which allows developers
 to define how a Java project should be compiled, packaged, tested and much more. One important
 feature of Maven is its ability to download dependencies from centralised repositories where
 developers can publish their releases. At the beginning of this project, however, bluima was not yet
@@ -592,7 +592,7 @@ flexibility from the users as possible.
 \subsubsection{Refactoring and Maintenance}
 
 The first idea that we explored was to package resources inside jar archive and use Maven to
-distribute them similarly to what DKpro \cite{dkpro} does but in a less complex manner for the
+distribute them similarly to what DKpro~\cite{dkpro} does but in a less complex manner for the
 users.
 
 In a nutshell, packaging resources within jar archives has two important drawbacks. Firstly,
@@ -621,7 +621,7 @@ The core refactoring issue with this design is that instead of working with \ID{
 paths as the initial implementation of bluima engines does, we would have to use \ID{InputStream} in
 order to access the resources files because of how Java jar system was designed. And this can be
 really problematic for some annotators. For example, the \ID{LinnaeusAnnotator}, which wraps the
-external Linnaeus library \cite{linnaeus}, uses an \ID{ArgParser} internally that cannot be created
+external Linnaeus library~\cite{linnaeus}, uses an \ID{ArgParser} internally that cannot be created
 from a data stream but absolutely requires a path to a configuration file.
 
 Of course, some workarounds could be elaborated, such as copying the content of the file in the jar
@@ -738,7 +738,7 @@ to access resources. This is why it was selected and implemented in this project
 
         \toprule
 
-        DKpro-Like \cite{dkpro} & \XMARK & \CMARK & (\CMARK) & \XMARK & \XMARK \\
+        DKpro-Like~\cite{dkpro} & \XMARK & \CMARK & (\CMARK) & \XMARK & \XMARK \\
 
         \midrule
 
