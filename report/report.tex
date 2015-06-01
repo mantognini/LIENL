@@ -142,20 +142,20 @@ since the amount of information is colossal and is obviously not memorisable by 
 being or even by a team of researchers, tools need to be created in order to extract the relevant
 data from the scientific literature in a precise and fast manner.
 
-Sherlok~\cite{sherlok} was created to solve this large-scale data mining problem. Based on a
+Sherlok~\cite{sherlok} was created to solve this large-scale text mining problem. Based on a
 Representational State Transfer (REST) API, Sherlok is a service capable of extracting information
 relevant to specific situation directly from a given text. It is designed to be both user- and
-developer-friendly and flexible so that it can analyse, via standard REST requests, any kind of
-input text formats.
+developer-friendly and flexible so that it can analyse text via standard REST requests.
 
 Currently, the main dependency of Sherlok is, but is not restricted to, bluima~\cite{bluima}, which
 is an open source project developed at the Blue Brain Project and consists of a large collection of
-UIMA-based \emph{annotators} (also called \emph{engines})~\cite{uima} that generate metadata from
-the input text. We will focus on those specific annotators for this project.
+UIMA-based \emph{annotators}~\cite{uima} (also called \emph{engines} -- both terms are used
+interchangeably) that generate metadata from the input text. We will focus on those specific
+annotators for this project.
 
 Generated metadata consists of a collection of \emph{annotations}. Each annotation has a begin and
-end position in the raw text, a type identifier and in some cases extra attributes. It can be as
-simple as representing the boundaries of sentences to more complex notions such as brain regions.
+end position in the raw text, a type identifier and in some cases extra attributes. It ranges from
+tags as simple as sentences boundaries to more complex notions such as brain regions.
 
 For example, annotating the following sentence for brain regions, generates the following
 annotations (for simplification, part of speech (PoS) tags are not shown here). Additionally,
@@ -168,36 +168,36 @@ Sherlok reports brain regions \ONEWC\; and \TWOWC\; as a co-occurrence.
       \text{.}
 \end{align*}
 
-Figure \ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
-point of view by Sherlok.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\linewidth]{res/sherlok_basic_rest_call.png}
-    \caption{Part of Speech Pipeline}
-    \label{fig:sherlok_basic_rest_call}
-\end{figure}
-
 While each annotator works on its own to generate metadata, Sherlok lets the user combines them in
 \emph{pipelines} where the output of one engine is used as the input for the next one. And in order
 to reuse engines in different pipelines, Sherlok separates their definitions: engines are first
 grouped in bundles, which make the bridge between Sherlok's scripting system and the UIMA annotators
-written in Java, and then they can be used by several pipelines.
+written in Java so that they can be used by several pipelines.
 
-The main goal of this project was to decouple the algorithms used in the engines from their
-resources in bluima in order to add flexibility to the installation, update and usage of those
-resources in Sherlok. Resources could be as simple as a list of countries, but could also consist of
-large trained models (e.g. to detect part of speech) or directories of configuration files.
-Initially, bluima relied on a system-wide setting to locate its resources.  However, since we wanted
+In addition to basic configuration parameters such as arbitrary strings or integers, the algorithms
+used in the different engines can rely on external resources which can be as simple as a file
+containing a list of countries, but could also consist of large trained models (e.g. to detect part
+of speech) or directories of configuration files. The main goal of this project was to decouple
+those algorithms from their resources in bluima in order to add flexibility to the installation,
+update and usage of those resources in Sherlok.
+
+Initially, bluima relied on a system-wide setting to locate its resources. However, since we wanted
 to make Sherlok run on as many systems as possible -- which should include a server architecture
 where a dedicated machine is in charge of storage -- we couldn't rely on this property any longer.
 Hence, the first and main task of this project was to devise a system capable of working without
 hard coded paths.
 
-A second task was the design of a clever system for installing and loading resources on demand (i.e.
-when loading a pipeline). The third and final task was to port a full brain regions NER and
-connections pipeline from bluima to Sherlok, which includes sentence detection, part of speech
-tagging, species recognition, measures and units extraction and more.
+This project was threefold:
+
+\begin{itemize}[label=\ding{228}]
+    \item the first and main task was to devise a system capable of working without hard coded
+        paths;
+    \item a second task was the design of a clever system for installing and loading resources on
+        demand (i.e. when loading a pipeline);
+    \item the third and final task was to port a full brain regions NER and connections pipeline
+        from bluima to Sherlok, which includes sentence detection, part of speech tagging, species
+        recognition, measures and units extraction and more~\cite{bluima_2013}.
+\end{itemize}
 
 \TODO{include quick plan of paper}
 
@@ -331,6 +331,16 @@ fine-grained access control and restrict users permissions on a case by case bas
 system can easily be built on top of Sherlok: a simple proxy program can integrate restricted access
 using for example Unix accounts or a Lightweight Directory Access Protocol (LDAP) server to filter
 requests before Sherlok can process them.
+
+Figure \ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
+point of view by Sherlok.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{res/sherlok_basic_rest_call.png}
+    \caption{Part of Speech Pipeline}
+    \label{fig:sherlok_basic_rest_call}
+\end{figure}
 
 \subsection{UIMA-Based Configurable Service}
 
@@ -955,9 +965,15 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
     \href{http://sherlok.io}{sherlok.io}
 
 \bibitem{bluima}
-    bluima,
+    Bluima,
 	\TODO{paper},
     \href{https://github.com/BlueBrain/bluima}{github.com/BlueBrain/bluima}
+
+\bibitem{bluima_2013}
+    Bluima: a UIMA-based NLP Toolkit for Neuroscience,
+    by R. Richardet,
+    Proceedings of the 3rd Workshop on Unstructured Information Management Architecture, Darmstadt,
+    Germany, 2013, pp. 34–41, Gesellschaft für Sprachtechnologie und Computerlinguistik.
 
 \bibitem{uima}
     Apache UIMA,
