@@ -349,10 +349,11 @@ point of view by Sherlok.
 
 Internally, Sherlok processes the input text through Unstructured Information Management
 Architecture (UIMA)~\cite{uima} engines or more generally through a Rule-based Text Annotation
-(RUTA) scripts~\cite{ruta}. Both RUTA and UIMA are projects of the Apache Software Foundation
-\cite{apachefundation} focusing in analysing large volumes of unstructured information in order to
-discover knowledge that is relevant to an end user. While Sherlok focuses on the Java Frameworks for
-UIMA, it could be extended in the future to also support the C++ or Scaleout Frameworks.
+(RUTA) scripts~\cite{ruta}~\cite{ruta_2014}. Both RUTA and UIMA are projects of the Apache Software
+Foundation \cite{apachefundation} focusing in analysing large volumes of unstructured information in
+order to discover knowledge that is relevant to an end user. While Sherlok focuses on the Java
+Frameworks for UIMA, it could be extended in the future to also support the C++ or Scaleout
+Frameworks.
 
 In order to let users who are not Java developers combine engines together, Sherlok has a Java
 agnostic configuration system that separate the definition of engines from their usage in pipelines.
@@ -485,10 +486,10 @@ UIMA-based applications are structured into components called \emph{analysis eng
 can be either written in C++ or in Java, however C++ development seems rather marginal compared to
 the amount of available libraries and tool for UIMA in Java, for which several implementation
 strategies have been devised over the years. The most modern and popular API used to build
-components is \emph{uimaFIT}~\cite{uimafit}: it aims to simplify the archaic XML description used in
-earlier UIMA APIs to configure (C++ or Java) engines by writing both the implementation and
-configuration of engines' parameters directly in Java. While Sherlok is compatible with any
-UIMA-compatible technology, we focus on the uimaFIT approach in what follows.
+components is \emph{uimaFIT}~\cite{uimafit}~\cite{uimafit_2009}: it aims to simplify the archaic XML
+description used in earlier UIMA APIs to configure (C++ or Java) engines by writing both the
+implementation and configuration of engines' parameters directly in Java. While Sherlok is
+compatible with any UIMA-compatible technology, we focus on the uimaFIT approach in what follows.
 
 At runtime, an annotator has mainly two actions: initialisation and processing. Annotations produced
 by engines is stored in a Common Analysis System (CAS)~\cite{cas} general purpose data structure,
@@ -519,13 +520,13 @@ it becomes much more complex when we want to include a flexible external configu
 Sherlok. Moreover, and especially for simple pipelines, sometimes implementing a Java annotator
 requires more boilerplate code than the actual algorithm.
 
-To workaround this, an application can use the RUTA language~\cite{ruta}, which is an imperative
-rule language extended with scripting elements that can also be used to define pipelines. To
-illustrate this, Listing~\ref{lst:ruta_example_dog} shows a very simple script that annotates
-``dog'' as an ``Animal'' and Listing~\ref{lst:ruta_example_pos} shows how RUTA can be used to run
-the PoS pipeline from Figure~\ref{fig:pos_pipeline_uimafit}. For this last example, unlike with
-uimaFIT, the XML description of engines' parameters need to be available at runtime as it is not
-embedded in the script itself.
+To workaround this, an application can use the RUTA language~\cite{ruta}~\cite{ruta_2014}, which is
+an imperative rule language extended with scripting elements that can also be used to define
+pipelines. To illustrate this, Listing~\ref{lst:ruta_example_dog} shows a very simple script that
+annotates ``dog'' as an ``Animal'' and Listing~\ref{lst:ruta_example_pos} shows how RUTA can be used
+to run the PoS pipeline from Figure~\ref{fig:pos_pipeline_uimafit}. For this last example, unlike
+with uimaFIT, the XML description of engines' parameters need to be available at runtime as it is
+not embedded in the script itself.
 
 \begin{lstlisting}[float,language=ruta,
                    caption=A basic RUTA script,
@@ -1010,6 +1011,12 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
     Apache uimaFIT,
     \href{https://uima.apache.org/uimafit.html}{uima.apache.org/uimafit.html}
 
+\bibitem{uimafit_2009}
+    Building Test Suites for UIMA Components,
+    by P. Ogren and S. Bethard,
+    Proceedings of the Workshop on Software Engineering, Testing, and Quality Assurance for Natural
+    Language Processing (SETQA-NLP 2009)
+
 \bibitem{cas}
     Design and implementation of the UIMA Common Analysis System,
     by T. Götz and O. Suhre,
@@ -1017,8 +1024,12 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \bibitem{ruta}
     Apache RUTA,
-	\TODO{paper},
     \href{https://uima.apache.org/ruta.html}{uima.apache.org/ruta.html}
+
+\bibitem{ruta_2014}
+    UIMA Ruta: Rapid development of rule-based information extraction applications,
+    by P. KLUEGL, M. TOEPFER, P.-D. BECK, G. FETTE and F. PUPPE,
+    Natural Language Engineering,
 
 \bibitem{maven}
     Apache Maven,
