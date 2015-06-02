@@ -20,6 +20,7 @@
 %\usepackage{bera}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{xspace}
 
 \setlist{parsep=0pt,listparindent=\parindent}
 
@@ -85,6 +86,7 @@
 \newcommand{\ID}[1]{{\textsc{#1}}}
 \newcommand{\VAR}[1]{\mbox{\texttt{#1}}}
 \newcommand{\PATH}[1]{\mbox{\texttt{#1}}}
+\newcommand{\JAR}{JAR\xspace}
 
 \newcommand{\TODO}[1]{\texttt{\textcolor{YellowOrange}{(#1)}}} % for inline TODO
 \newcommand{\REST}[1]{\textsf{#1}}
@@ -584,7 +586,7 @@ Yet, publishing bluima to Maven Central would not suffice to solve a bigger issu
 uses resource files in its engines and therefore needs to access those files at runtime. Originally,
 it used a system global variable (\VAR{BLUIMA\_HOME}) as many popular tools do nowadays (e.g. Java
 with its \VAR{JAVA\_HOME}) to locate specific files. Thus, using Maven to download and install Java
-archives (jar) is not enough to locate those files later at runtime: the variable must be set at a
+archives (\JAR) is not enough to locate those files later at runtime: the variable must be set at a
 system-wide level by the user itself.
 
 This made it clear that we needed a better engines-resources model or the integration of bluima in
@@ -604,15 +606,15 @@ flexibility from the users as possible.
 
 \subsubsection{Refactoring and Maintenance}
 
-The first idea that we explored was to package resources inside jar archive and use Maven to
+The first idea that we explored was to package resources inside \JAR files and use Maven to
 distribute them similarly to what DKpro~\cite{dkpro}~\cite{dkpro_2014} does but in a less complex
 manner for the users.
 
-In a nutshell, packaging resources within jar archives has two important drawbacks. Firstly,
-updating a resource file implies repackaging and redeploying the new version to, for example, Maven
-Central, which can be quite a burden. One could argue that this is an administrative task that is
-not frequent and therefore not significantly enough to discard this strategy. However, the second
-issue is of much more concern.
+In a nutshell, packaging resources within \JAR files has two important drawbacks. Firstly, updating
+a resource file implies repackaging and redeploying the new version to, for example, Maven Central,
+which can be quite a burden. One could argue that this is an administrative task that is not
+frequent and therefore not significantly enough to discard this strategy. However, the second issue
+is of much more concern.
 
 As detailed in appendix~\ref{sec:packaging1}, this packaging strategy implies more refactoring than
 it seems at first sight: in order to be able to use an engine with different resources (e.g. one
@@ -626,19 +628,19 @@ of the proxy we designed is based on the Java Reflection API is not related to t
 refactoring needed to adapt bluima to this packaging design, it significantly adds some complexity
 to the overall software and therefore will increase its maintenance cost.
 
-The Java API to access jar content is based on read-only access because, among other things, those
+The Java API to access \JAR content is based on read-only access because, among other things, those
 archives can be signed and thus modifying their content would threaten the integrity of the
 signature or corrupt the archive.
 
 The core refactoring issue with this design is that instead of working with \ID{File} objects or
 paths as the initial implementation of bluima engines does, we would have to use \ID{InputStream} in
-order to access the resources files because of how Java jar system was designed. And this can be
+order to access the resources files because of how Java \JAR system was designed. And this can be
 really problematic for some annotators. For example, the \ID{LinnaeusAnnotator}, which wraps the
 external Linnaeus library~\cite{linnaeus}, uses an \ID{ArgParser} internally that cannot be created
 from a data stream but absolutely requires a path to a configuration file.
 
-Of course, some workarounds could be elaborated, such as copying the content of the file in the jar
-archive to a temporary file and then use this file's path, but only on a case by case basis and that
+Of course, some workarounds could be elaborated, such as copying the content of the file in the \JAR
+file to a temporary file and then use this file's path, but only on a case by case basis and that
 those would most probably induce performance penalties.
 
 \subsubsection{Resource Interdependency}
@@ -664,7 +666,7 @@ resource packaging system on a system similar to DKpro, the consequences differ:
 
 \begin{itemize}
 
-    \item Were we to use a packaging strategy based on jar files, we could introduce an arbitrary
+    \item Were we to use a packaging strategy based on \JAR files, we could introduce an arbitrary
         naming structure for the identifiers used to access the actual resource through the proxy
         system and have an \emph{aggregator proxy} that generates multiple data streams to each and
         every individual resources from a single root identifier. While this solution seems simple
@@ -678,7 +680,7 @@ resource packaging system on a system similar to DKpro, the consequences differ:
         together in an archive (e.g. a zip file) that would get extracted at runtime into a
         temporary directory.
 
-        With this approach we have at least two significant advantages over the jar-based design
+        With this approach we have at least two significant advantages over the \JAR-based design
         without sub-archives. Firstly, it only requires a minimal refactoring of the current Java
         code to extract and use the data as the implementation is based on \ID{File}s or
         \ID{String}s representing paths. Secondly, it allows files to refer to one another through
@@ -698,7 +700,7 @@ resource packaging system on a system similar to DKpro, the consequences differ:
 
 \subsubsection{Flexibility}
 
-With all the above issues, the jar-based packaging design seems rather inconvenient to use, mainly
+With all the above issues, the \JAR-based packaging design seems rather inconvenient to use, mainly
 because it involves a lot of refactoring. Moreover it adds some complexity to the implementation.
 Some engines behave differently depending on the file type of some of their resources: for example,
 the \ID{SuffixSensitiveGISModelReader} utility reads the content of its input resource differently
@@ -710,7 +712,7 @@ In addition to all the above issues, we could argue that we actually remove flex
 users by forcing them to use a Java system to archive and manage resources despite the fact that the
 system using bluima could be Java agnostic from the final user point of view. It could actually be
 quite painful for someone who is using a Source Control Management (SCM) tool, such as Git, to
-manage two distinct files structures: one that is convenient to the user and one for our jar
+manage two distinct files structures: one that is convenient to the user and one for our \JAR-based
 archiving system.
 
 Moreover, if we take the example of batch of files, at the end of the day, we have extracted some
@@ -721,7 +723,7 @@ incredibly complexify the implementation.
 \subsubsection{Adopted Solution}
 
 We argue that the installation process for runtime resources could be much simpler than packaging
-resources into jar files in the first place, potentially aggregating batch of files together in
+resources into \JAR files in the first place, potentially aggregating batch of files together in
 sub-archives, then accessing those files via a proxy and an extra layer of resource identifiers,
 potentially extracting sub-archives into a temporary directory, and by this mean forcing the user to
 use a specific versioning system as DKpro-like systems do.
@@ -831,19 +833,30 @@ One of the first objective of this project was the disassociation of algorithms 
 
 \TODO{quickly present DKpro packaging strategy \& ant script. Say why we did not go with it.}
 
-With Maven, main idea is to store a set of resources, such as dataset trained on a specific corpus of texts, in a jar file and access them in read-only mode at runtime. Package dependencies can be used to ensure that some files are available at runtime and ideally package version should be used to let the user update resources independently of the algorithms.
+With Maven, main idea is to store a set of resources, such as dataset trained on a specific corpus of texts, in a \JAR file and access them in read-only mode at runtime. Package dependencies can be used to ensure that some files are available at runtime and ideally package version should be used to let the user update resources independently of the algorithms.
 
 \TODO{Insert example, e.g. Sentence}
 
-It might not be clearly apparent for someone not used to work with Java jar system, but with this approach we cannot modify the resource files at runtime since they have been packaged, and this for mainly two reasons. Firstly, the Java API doesn't provide standard tools to modify such archives. And secondly, if the jar archive were signed (which is the standard procedure) then modifying its content would actually break the signature and therefore corrupt the archive.
+It might not be clearly apparent for someone not used to work with Java \JAR-based system, but with
+this approach we cannot modify the resource files at runtime since they have been packaged, and this
+for mainly two reasons. Firstly, the Java API doesn't provide standard tools to modify such
+archives.  And secondly, if the \JAR file were signed (which is the standard procedure) then
+modifying its content would actually break the signature and therefore corrupt the archive.
 
-Additionally, the API to access resources inside jar files is not based on Java \ID{File} objects. Instead algorithms have to use \ID{InputStream} objects through \ID{ClassLoader} objects to access the content of a given file. We will discuss how the current code need to be refactored in Section~\ref{sec:restructuring_bluima}.
+Additionally, the API to access resources inside \JAR files is not based on Java \ID{File} objects.
+Instead algorithms have to use \ID{InputStream} objects through \ID{ClassLoader} objects to access
+the content of a given file. We will discuss how the current code need to be refactored in
+Section~\ref{sec:restructuring_bluima}.
 
 Here we describe three alternatives that we used to contrast alternative strengths and weaknesses before concluding with a fourth variant that should match our needs. Below, \ID{ada} and \ID{bob} denote two variants of a kind of resource that are compatible with a common algorithm package, denoted \ID{algo}. The \ID{using*} packages can be thought as pipelines in the context of bluima/sherlok.
 
 \subsubsection{Version A}
 
-The first system we analysed spread each algorithm and set of resources into individual packages that depends on \ID{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in Figure~\ref{fig:pkgsysA}.
+The first system we analysed spread each algorithm and set of resources into individual packages
+that depends on \ID{modeldep}, a proxy utility to access the resource files inside \JAR file. If an
+algorithm depends on some resource file then it accepts as input parameter the model name (as a
+string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies
+toward their annotators but also toward specific models as shown in Figure~\ref{fig:pkgsysA}.
 
 This system has several positive aspects. First of all, tests can be easily written by specifying potentially multiple resource packages as dependencies with Maven's test scope. Then, \ID{modeldep} also defines a clear Java interface to define the contract for models and their versions. Additionally, the proxy system centralises the utility to load resources and therefore eases maintenance by not involving code duplication in several packages. However, models could not be swapped on the fly since it would involve recompiling and repackaging \ID{using\_my\_algo}.  Alternatively, to prevent modifications, \ID{using\_my\_algo} could depend on both \ID{ada} and \ID{bob} packages but this would not be as flexible as we want it to be.
 
@@ -857,7 +870,12 @@ This system has several positive aspects. First of all, tests can be easily writ
 
 \subsubsection{Version B}
 
-The second approach is based on Maven's version string: an \ID{algo} will depend on an abstract \ID{model} which provide a mechanism to load a specific file from its jar archive and both \ID{ada} and \ID{bob} model versions are defined as subversion of \ID{model}. For example, the convention could be that if \ID{model} is defined as version \ID{0.1} then \ID{ada} will use the string \ID{0.1-ADA} to define its version and the \ID{algo} will accept versions in the range $ [0.1,0.2) $.
+The second approach is based on Maven's version string: an \ID{algo} will depend on an abstract
+\ID{model} which provide a mechanism to load a specific file from its \JAR file and both \ID{ada}
+and \ID{bob} model versions are defined as subversion of \ID{model}. For example, the convention
+could be that if \ID{model} is defined as version \ID{0.1} then \ID{ada} will use the string
+\ID{0.1-ADA} to define its version and the \ID{algo} will accept versions in the range $ [0.1,0.2)
+$.
 
 The model actually used will be either specified at compile time (cf. \ID{using.algo2}) or be selected at runtime depending on the installed packages (cf. \ID{using.algo1}) as depicted on Figure~\ref{fig:pkgsysB}. While this offers a great flexibility to the user designing pipelines and allows him to swap models without repackaging anything, it means that test projects cannot ensure the correctness of more than one model version at a time. Moreover, if no specific version is bound to the pipeline, such as with \ID{using.algo1}, then there is no strong guarantee that a valid version is available at runtime.
 
@@ -887,7 +905,9 @@ After exploring possibilities offered by the Maven packaging system we analysed 
 
 We also reflected on the structure of the algorithm, especially on their input arguments. We came to the conclusion that, mostly for flexibility, they should accept \ID{InputStream}s as input and not be bound to any models. Instead, the pipelines will be in charge to give them the proper resource data streams. Therefore the pipeline will have dependencies toward algorithms and models.
 
-Finally, in order to centralise code and simplify loading resources we introduce \ID{ModelProxy}, a utility class used by pipelines that, given a \ID{String} representing a class name, opens a stream to a given file inside the class' jar archive.
+Finally, in order to centralise code and simplify loading resources we introduce \ID{ModelProxy}, a
+utility class used by pipelines that, given a \ID{String} representing a class name, opens a stream
+to a given file inside the class' \JAR file.
 
 In some cases, when processing the resource as a stream, it can be convenient to have access to its original filename (e.g. when reading a compressed archive). Therefore we encapsulate the name and the stream in a class -- \ID{ModelStream} -- that can be seen as a specialised \ID{InputStream} with a filename property.
 
@@ -948,7 +968,7 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 \section{Future Work}
 
 \TODO{ideas? support for more variable url pattern (svn, ...) }
-\TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven jar (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
+\TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven \JAR (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
 
 \TODO{text extractor}
 
