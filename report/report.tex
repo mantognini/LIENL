@@ -332,7 +332,7 @@ system can easily be built on top of Sherlok: a simple proxy program can integra
 using for example Unix accounts or a Lightweight Directory Access Protocol (LDAP) server to filter
 requests before Sherlok can process them.
 
-Figure \ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
+Figure~\ref{fig:sherlok_basic_rest_call} depicts how a REST query is handled from a very high level
 point of view by Sherlok.
 
 \begin{figure}
@@ -373,7 +373,7 @@ and much more. The engines used in those pipelines come from bluima, which is pr
 \ref{sec:bluima}.
 
 The annotations produced by a pipeline are returned from the server in JSON format~\cite{json}. For
-example, Listing \ref{lst:json_sententence_detection} highlights the annotations in JSON format
+example, Listing~\ref{lst:json_sententence_detection} highlights the annotations in JSON format
 produced by the \ID{bluima.sentence} pipeline when processing ``\textit{Terminologies which lack
 semantic connectivity hamper the effective search in biomedical fact databases and document
 retrieval systems. We here focus on the integration of two such isolated resources, the term lists
@@ -494,7 +494,7 @@ And in a pipeline of annotators, a single CAS instance is passed from one engine
 the data from previous engines can be used to filter data, augment existing annotations or produce
 new ones.
 
-Figure \ref{fig:pos_pipeline_uimafit} depicts how uimaFIT-based applications handle pipelines such
+Figure~\ref{fig:pos_pipeline_uimafit} depicts how uimaFIT-based applications handle pipelines such
 as PoS tagging: first, the text to be processed is loaded into a CAS instance, then engines are
 created through uimaFIT factory system with the appropriate configuration settings and finally the
 pipeline of engines is run.
@@ -518,9 +518,9 @@ requires more boilerplate code than the actual algorithm.
 
 To workaround this, an application can use the RUTA language~\cite{ruta}, which is an imperative
 rule language extended with scripting elements that can also be used to define pipelines. To
-illustrate this, Listing \ref{lst:ruta_example_dog} shows a very simple script that annotates
-``dog'' as an ``Animal'' and Listing \ref{lst:ruta_example_pos} shows how RUTA can be used to run
-the PoS pipeline from Figure \ref{fig:pos_pipeline_uimafit}. For this last example, unlike with
+illustrate this, Listing~\ref{lst:ruta_example_dog} shows a very simple script that annotates
+``dog'' as an ``Animal'' and Listing~\ref{lst:ruta_example_pos} shows how RUTA can be used to run
+the PoS pipeline from Figure~\ref{fig:pos_pipeline_uimafit}. For this last example, unlike with
 uimaFIT, the XML description of engines' parameters need to be available at runtime as it is not
 embedded in the script itself.
 
@@ -836,13 +836,13 @@ With Maven, main idea is to store a set of resources, such as dataset trained on
 
 It might not be clearly apparent for someone not used to work with Java jar system, but with this approach we cannot modify the resource files at runtime since they have been packaged, and this for mainly two reasons. Firstly, the Java API doesn't provide standard tools to modify such archives. And secondly, if the jar archive were signed (which is the standard procedure) then modifying its content would actually break the signature and therefore corrupt the archive.
 
-Additionally, the API to access resources inside jar files is not based on Java \ID{File} objects. Instead algorithms have to use \ID{InputStream} objects through \ID{ClassLoader} objects to access the content of a given file. We will discuss how the current code need to be refactored in Section \ref{sec:restructuring_bluima}.
+Additionally, the API to access resources inside jar files is not based on Java \ID{File} objects. Instead algorithms have to use \ID{InputStream} objects through \ID{ClassLoader} objects to access the content of a given file. We will discuss how the current code need to be refactored in Section~\ref{sec:restructuring_bluima}.
 
 Here we describe three alternatives that we used to contrast alternative strengths and weaknesses before concluding with a fourth variant that should match our needs. Below, \ID{ada} and \ID{bob} denote two variants of a kind of resource that are compatible with a common algorithm package, denoted \ID{algo}. The \ID{using*} packages can be thought as pipelines in the context of bluima/sherlok.
 
 \subsubsection{Version A}
 
-The first system we analysed spread each algorithm and set of resources into individual packages that depends on \ID{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in Figure \ref{fig:pkgsysA}.
+The first system we analysed spread each algorithm and set of resources into individual packages that depends on \ID{modeldep}, a proxy utility to access the resource files inside jar archives. If an algorithm depends on some resource file then it accepts as input parameter the model name (as a string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies toward their annotators but also toward specific models as shown in Figure~\ref{fig:pkgsysA}.
 
 This system has several positive aspects. First of all, tests can be easily written by specifying potentially multiple resource packages as dependencies with Maven's test scope. Then, \ID{modeldep} also defines a clear Java interface to define the contract for models and their versions. Additionally, the proxy system centralises the utility to load resources and therefore eases maintenance by not involving code duplication in several packages. However, models could not be swapped on the fly since it would involve recompiling and repackaging \ID{using\_my\_algo}.  Alternatively, to prevent modifications, \ID{using\_my\_algo} could depend on both \ID{ada} and \ID{bob} packages but this would not be as flexible as we want it to be.
 
@@ -858,7 +858,7 @@ This system has several positive aspects. First of all, tests can be easily writ
 
 The second approach is based on Maven's version string: an \ID{algo} will depend on an abstract \ID{model} which provide a mechanism to load a specific file from its jar archive and both \ID{ada} and \ID{bob} model versions are defined as subversion of \ID{model}. For example, the convention could be that if \ID{model} is defined as version \ID{0.1} then \ID{ada} will use the string \ID{0.1-ADA} to define its version and the \ID{algo} will accept versions in the range $ [0.1,0.2) $.
 
-The model actually used will be either specified at compile time (cf. \ID{using.algo2}) or be selected at runtime depending on the installed packages (cf. \ID{using.algo1}) as depicted on Figure \ref{fig:pkgsysB}. While this offers a great flexibility to the user designing pipelines and allows him to swap models without repackaging anything, it means that test projects cannot ensure the correctness of more than one model version at a time. Moreover, if no specific version is bound to the pipeline, such as with \ID{using.algo1}, then there is no strong guarantee that a valid version is available at runtime.
+The model actually used will be either specified at compile time (cf. \ID{using.algo2}) or be selected at runtime depending on the installed packages (cf. \ID{using.algo1}) as depicted on Figure~\ref{fig:pkgsysB}. While this offers a great flexibility to the user designing pipelines and allows him to swap models without repackaging anything, it means that test projects cannot ensure the correctness of more than one model version at a time. Moreover, if no specific version is bound to the pipeline, such as with \ID{using.algo1}, then there is no strong guarantee that a valid version is available at runtime.
 
 \begin{figure}
 \centering
@@ -870,7 +870,7 @@ The model actually used will be either specified at compile time (cf. \ID{using.
 
 \subsubsection{Version C}
 
-The third version we studied is the most simple one: as illustrated on Figure \ref{fig:pkgsysC}, instead of splitting everything in separate package, only annotators are packaged independently of pipelines and resources, which are grouped together. On the one hand this system couldn't be simpler but on the other, since pipelines often involve several engine annotators that are themselves used in several pipelines, the coupling of models and the corresponding algorithm implies that many packages have to be created to support each combination of models.
+The third version we studied is the most simple one: as illustrated on Figure~\ref{fig:pkgsysC}, instead of splitting everything in separate package, only annotators are packaged independently of pipelines and resources, which are grouped together. On the one hand this system couldn't be simpler but on the other, since pipelines often involve several engine annotators that are themselves used in several pipelines, the coupling of models and the corresponding algorithm implies that many packages have to be created to support each combination of models.
 
 
 \begin{figure}
@@ -882,7 +882,7 @@ The third version we studied is the most simple one: as illustrated on Figure \r
 
 \subsubsection{The verdict - Version D}
 
-After exploring possibilities offered by the Maven packaging system we analysed how resources and engines are related to each others and used by pipelines in bluima. Figure \ref{fig:pkgsysD} depicts those relations. It was also considered that repackaging is an acceptable cost to swap models. The most important point was avoiding at all cost to package an exponentially huge number of pipelines to match each and every possible combinations and for this reason version C was discarded.
+After exploring possibilities offered by the Maven packaging system we analysed how resources and engines are related to each others and used by pipelines in bluima. Figure~\ref{fig:pkgsysD} depicts those relations. It was also considered that repackaging is an acceptable cost to swap models. The most important point was avoiding at all cost to package an exponentially huge number of pipelines to match each and every possible combinations and for this reason version C was discarded.
 
 We also reflected on the structure of the algorithm, especially on their input arguments. We came to the conclusion that, mostly for flexibility, they should accept \ID{InputStream}s as input and not be bound to any models. Instead, the pipelines will be in charge to give them the proper resource data streams. Therefore the pipeline will have dependencies toward algorithms and models.
 
