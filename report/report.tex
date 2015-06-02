@@ -83,6 +83,7 @@
 % Commands
 
 \newcommand{\ID}[1]{{\textsc{#1}}}
+\newcommand{\VAR}[1]{\mbox{\texttt{#1}}}
 \newcommand{\PATH}[1]{\mbox{\texttt{#1}}}
 
 \newcommand{\TODO}[1]{\texttt{\textcolor{YellowOrange}{(#1)}}} % for inline TODO
@@ -147,11 +148,11 @@ Representational State Transfer (REST) API, Sherlok is a service capable of extr
 relevant to specific situation directly from a given text. It is designed to be both user- and
 developer-friendly and flexible so that it can analyse text via standard REST requests.
 
-Currently, the main dependency of Sherlok is, but is not restricted to, bluima~\cite{bluima}, which
-is an open source project developed at the Blue Brain Project and consists of a large collection of
-UIMA-based \emph{annotators}~\cite{uima} (also called \emph{engines} -- both terms are used
-interchangeably) that generate metadata from the input text. We will focus on those specific
-annotators for this project.
+Currently, the main dependency of Sherlok is, but is not restricted to,
+bluima~\cite{bluima}~\cite{bluima_2013}, which is an open source project developed at the Blue Brain
+Project and consists of a large collection of UIMA-based \emph{annotators}~\cite{uima} (also called
+\emph{engines} -- both terms are used interchangeably) that generate metadata from the input text.
+We will focus on those specific annotators for this project.
 
 Generated metadata consists of a collection of \emph{annotations}. Each annotation has a begin and
 end position in the raw text, a type identifier and in some cases extra attributes. It ranges from
@@ -566,9 +567,9 @@ or pipelines to download automatically remote resources.
 
 Initially all resources used by bluima's engines, such as models trained on the GENIA corpus
 \cite{genia} to tag part of speech elements, were accessed via a system wide path variable. In this
-section we will discuss the adopted strategy to improve this system and make bluima path agnostic in
-order to improve its integration in Sherlok. In the Appendix \TODO{?} we show a few other alternatives
-that were also considered during this project.
+section we will discuss the adopted strategy to improve this system and make bluima
+``path-agnostic'' in order to improve its integration in Sherlok. In the Appendix \TODO{?} we show a
+few other alternatives that were also considered during this project.
 
 \subsection{Initial Situation}
 
@@ -581,8 +582,8 @@ and install it.
 
 Yet, publishing bluima to Maven Central would not suffice to solve a bigger issue. Bluima widely
 uses resource files in its engines and therefore needs to access those files at runtime. Originally,
-it used a system global variable (\ID{BLUIMA\_HOME}) as many popular tools do nowadays (e.g. Java
-with its \ID{JAVA\_HOME}) to locate specific files. Thus, using Maven to download and install Java
+it used a system global variable (\VAR{BLUIMA\_HOME}) as many popular tools do nowadays (e.g. Java
+with its \VAR{JAVA\_HOME}) to locate specific files. Thus, using Maven to download and install Java
 archives (jar) is not enough to locate those files later at runtime: the variable must be set at a
 system-wide level by the user itself.
 
@@ -604,8 +605,8 @@ flexibility from the users as possible.
 \subsubsection{Refactoring and Maintenance}
 
 The first idea that we explored was to package resources inside jar archive and use Maven to
-distribute them similarly to what DKpro~\cite{dkpro} does but in a less complex manner for the
-users.
+distribute them similarly to what DKpro~\cite{dkpro}~\cite{dkpro_2014} does but in a less complex
+manner for the users.
 
 In a nutshell, packaging resources within jar archives has two important drawbacks. Firstly,
 updating a resource file implies repackaging and redeploying the new version to, for example, Maven
@@ -613,17 +614,17 @@ Central, which can be quite a burden. One could argue that this is an administra
 not frequent and therefore not significantly enough to discard this strategy. However, the second
 issue is of much more concern.
 
-As detailed in the Appendix \TODO{?}, this packaging strategy implies more refactoring than it seems
-at first sight: in order to be able to use an engine with different resources (e.g. one might prefer
-to use a probabilistic tokenizer trained on the GENIA corpus to process some inputs, but use a model
-trained on a different corpus for some other inputs) and not hardcode them, we need a \emph{proxy}
-to select from an identifier the appropriate files at runtime.
+As detailed in appendix~\ref{sec:packaging1}, this packaging strategy implies more refactoring than
+it seems at first sight: in order to be able to use an engine with different resources (e.g. one
+might prefer to use a probabilistic tokenizer trained on the GENIA corpus to process some inputs,
+but use a model trained on a different corpus for some other inputs) and not hardcode them, we need
+a \emph{proxy} to select from an identifier the appropriate files at runtime.
 
-In the appendix we illustrate this with a technique using as the identifier the name of the class
-that ``owns'' the desired resource file. Although the fact that the implementation of the proxy we
-designed is based on the Java Reflection API is not related to the amount of refactoring needed to
-adapt bluima to this packaging design, it significantly adds some complexity to the overall software
-and therefore will increase its maintenance cost.
+In appendix~\ref{sec:packaging1}, we illustrate this with a technique using as the identifier the
+name of the class that ``owns'' the desired resource file. Although the fact that the implementation
+of the proxy we designed is based on the Java Reflection API is not related to the amount of
+refactoring needed to adapt bluima to this packaging design, it significantly adds some complexity
+to the overall software and therefore will increase its maintenance cost.
 
 The Java API to access jar content is based on read-only access because, among other things, those
 archives can be signed and thus modifying their content would threaten the integrity of the
@@ -642,7 +643,7 @@ those would most probably induce performance penalties.
 
 \subsubsection{Resource Interdependency}
 
-The \ID{LinnaeusAnnotator} also illustrate another feature that engines might need: the ability to
+The \ID{LinnaeusAnnotator} also illustrates another feature that engines might need: the ability to
 reference a resource file from another resource file via relative paths. With DKpro-like solutions,
 the usage of stream to read resources content makes it much harder to allow such behaviour.
 
@@ -673,7 +674,7 @@ resource packaging system on a system similar to DKpro, the consequences differ:
         with \ID{LinnaeusAnnotator}.
 
     \item If we apply the idea of names having an arbitrary but constant structure to the filenames
-        directly instead of the identifiers used by a proxy, we can group the resource files
+        directly instead of the identifiers used by a proxy, we could group the resource files
         together in an archive (e.g. a zip file) that would get extracted at runtime into a
         temporary directory.
 
@@ -697,16 +698,16 @@ resource packaging system on a system similar to DKpro, the consequences differ:
 
 \subsubsection{Flexibility}
 
-With all the different issues listed above, the jar-based packaging design seems rather inconvenient
-to use, mainly because it involves a lot of refactoring. Moreover it adds some complexity to the
-implementation. Some engines behave differently depending on the file type of some of their
-resources: for example, the \ID{SuffixSensitiveGISModelReader} utility read the content of its input
-resource differently depending if the file extension is ``.bin'' or ``.txt''. When using
-\ID{InputStream} instead of \ID{File} the extension is lost and therefore need to be tracked with an
-additional parameter.
+With all the above issues, the jar-based packaging design seems rather inconvenient to use, mainly
+because it involves a lot of refactoring. Moreover it adds some complexity to the implementation.
+Some engines behave differently depending on the file type of some of their resources: for example,
+the \ID{SuffixSensitiveGISModelReader} utility reads the content of its input resource differently
+depending if the file extension is ``\PATH{.bin}'' or ``\PATH{.txt}''. When using \ID{InputStream}
+instead of \ID{File} the extension is lost and therefore need to be tracked with an additional
+parameter.
 
 In addition to all the above issues, we could argue that we actually remove flexibility from the
-user by forcing him to use a Java system to archive and manage resources despite the fact that the
+users by forcing them to use a Java system to archive and manage resources despite the fact that the
 system using bluima could be Java agnostic from the final user point of view. It could actually be
 quite painful for someone who is using a Source Control Management (SCM) tool, such as Git, to
 manage two distinct files structures: one that is convenient to the user and one for our jar
@@ -725,14 +726,14 @@ sub-archives, then accessing those files via a proxy and an extra layer of resou
 potentially extracting sub-archives into a temporary directory, and by this mean forcing the user to
 use a specific versioning system as DKpro-like systems do.
 
-From bluima perspective, the user could simply installed the configuration files in a directory of
-his choosing and configured the engines with paths to the actual resources without using any
-system-wide variable. Withal, since this simpler approach does not enforce any versioning mechanism
-at all, the user is free to implement any system that matches his needs. Following from this fact,
-Sherlok can add an extra layer, directly integrated in the bundle \& pipeline configuration files, to
-manage resources easily for the end users. Such system can, but is not restricted to, be based on
-Git: a user can define a (batch of) resource(s) by a Git repository and an optional tag or commit
-SHA and Sherlok then can automatically download and install the specific version of the resources.
+From bluima perspective, the user could simply install the configuration files in a directory of his
+choosing and configure the engines with paths to the actual resources without using any system-wide
+variable. Withal, since this simpler approach does not enforce any versioning mechanism at all, the
+user is free to implement any system that matches his needs. Following from this fact, Sherlok can
+add an extra layer, directly integrated in the bundle \& pipeline configuration files, to manage
+resources easily for the end users. Such system can, but is not restricted to, be based on Git: a
+user can define a (batch of) resource(s) by a Git repository and an optional tag or commit SHA and
+Sherlok then can automatically download and install the specific version of the resources.
 
 This last solution allies the flexibility of using Java \ID{File} objects, and therefore involves
 only little refactoring of bluima annotators, with the power of external, well-establish and
@@ -816,7 +817,7 @@ to access resources. This is why it was selected and implemented in this project
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
 
-\TODO{find better title}
+\TODO{find better title} \TODO{Move to appendix}
 
 The initial idea was to base the system on Apache Maven \TODO{ref}. However, while implementing the
 strategy described below we realised that it was not as flexible as predicted. A better alternative
@@ -968,7 +969,6 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \bibitem{bluima}
     Bluima,
-	\TODO{paper},
     \href{https://github.com/BlueBrain/bluima}{github.com/BlueBrain/bluima}
 
 \bibitem{bluima_2013}
@@ -1003,6 +1003,17 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 \bibitem{maven}
     Apache Maven,
     \href{https://maven.apache.org/}{maven.apache.org}
+
+\bibitem{dkpro}
+    DKPro,
+    \href{https://code.google.com/p/dkpro-core-asl/}{code.google.com/p/dkpro-core-asl/}
+
+\bibitem{dkpro_2014}
+    A broad-coverage collection of portable NLP components for building shareable analysis
+    pipelines,
+    by R. Eckart de Castilho and I. Gurevych,
+    Proceedings of the Workshop on Open Infrastructures and Analysis Frameworks for HLT (OIAF4HLT)
+    at COLING 2014
 
 \bibitem{apachefundation}
     The Apache Software Foundation,
