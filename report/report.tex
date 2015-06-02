@@ -792,36 +792,36 @@ implementation language or tools.
 
 Because we now want to work only with generic paths, the refactoring mostly consists in adding
 configuration parameters to annotators to handle custom resource locations. For example, the
-\VAR{modelFile} parameter of \ID{SentenceAnnotator} should be capable of loading a file from
-wherever on the disk.
+\VAR{modelFile} parameter of \ID{Sentence\-Annotator}, which represents the model to use for
+detecting sentences, should be capable of loading a file from wherever on the disk.
 
 Usually this refactoring is trivial: we only need to introduce an extra parameter to compute paths
 to files or directories. And since this only adds flexibility, we don't see any downside to this
 technique.
 
-However, this implies that some part of the current code base of bluima need to get upgraded,
+However, this implies that a marginal part of the current code base of bluima needs to get upgraded,
 deprecated or even removed. For example, the \ID{OpenNlp\-Helper} class is a utility to load NLP
-annotators, such as \ID{SentenceAnnotator}, and configure them with the models trained on the
-PennBio corpus. But since this utility uses a fixed path based on the global variable
-\VAR{BLUIMA\_HOME} to locate model resources, it cannot be used as is. For this specific case, it is
-easier to simply deprecate it for mainly two reasons:
+annotators, such as \ID{Sentence\-Annotator}, and configure them with the models trained on the
+PennBio corpus. But since this utility uses a fixed path, based on the global variable
+\VAR{BLUIMA\_HOME}, to locate model resources, it cannot be used as-is. For this specific case, it
+is easier to simply deprecate it for mainly two reasons:
 \begin{enumerate*}[label=\itshape\alph*\upshape)]
     \item using the NLP annotators directly is straightforward;
-    \item and more importantly, this proxy is not compatible with RUTA and Sherlok scripting system.
+    \item and more importantly, this factory is not compatible with RUTA and Sherlok scripting system.
 \end{enumerate*}
 
-Additionally, unit tests need to be refactored to take into account that using an environment
-variable is no longer reliable. Fortunately, this is rather trivial for bluima since its build
-system is Maven: unit tests can be configured through the \ID{maven-surefire-plugin} at compile
-time, without any user interaction, to set a Java property that represent the root directory of all
-bluima resources. Then, the refactoring of tests is as simple as using the newly introduced Java
-property instead of a system-wide variable.
+Additionally, unit tests need to be refactored to take into account that using the
+\VAR{BLUIMA\_HOME} environment variable is no longer reliable. Fortunately, this is rather trivial
+for bluima since its build system is Maven: unit tests can be configured through the
+\ID{maven-surefire-plugin} at compile time, without any user interaction, to set a Java property
+that represent the root directory of all bluima resources. Then, the refactoring of tests is as
+simple as using the newly introduced Java property instead of a system-wide variable.
 
-Finally, because annotators are now independent of the location of their resource files, we can
-move the resources into a separate Git repository and include it in bluima with a Git submodule. As
-we will see in the Section~\ref{sec:config_in_sherlok}, this has the nice property of allowing
-Sherlok to download only those resources at runtime, and thus without the full bluima code base
-which weighs more than 700MB (with its history).
+Finally, because annotators are now independent of the location of their resource files, we can move
+the resources into a separate Git repository and include it in bluima with a Git submodule. As we
+will see in the Section~\ref{sec:config_in_sherlok}, this has the nice property of allowing Sherlok
+to download only those resources at runtime, and thus spare the effort of downloading the full
+bluima code base which weighs more than 700MB (with its history).
 
 \subsection{Configuration in Sherlok}
 \label{sec:config_in_sherlok}
