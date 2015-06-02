@@ -942,13 +942,41 @@ are combined together to generate the underlying RUTA script that Sherlok will u
 
 \subsection{Possible Extensions}
 
-\TODO{auto archive extractor / ssh / svn / hg / \dots}
+The implementation of the previous concept in this project proves that this strategy works well for
+Sherlok. But yet users might want more features, such as more remote protocol support (SVN, hg, SSH,
+\dots) as previously mentioned. Here we list a few other features that could be interesting to
+implement.
 
-\TODO{auto update for HTTP (using rfc + download if newer)}
+\begin{description}
 
-\TODO{auto update for Git branches (support for Git hooks, \dots)}
+    \item[Archive Extraction] When working with batch of files, it can be convenient to download an
+        archive and extract it automatically. This could be easily be added to Sherlok by adding a
+        parameter for the HTTP configuration variable.
 
-\TODO{improve Git download strategy (if SHA, depth 1, \dots)}
+    \item[Redownload If Newer] Being able to fetch remote files, especially with HTTP protocol, is
+        very useful. Currently, once resources have been downloaded and cached by Sherlok they won't
+        be redownloaded until they are cleaned. Therefore, if the remote resource is updated, the
+        system administrator has to clean it manually. However, this could be easily be improved by
+        supporting automatic update of HTTP resources by using the \ID{If-Modified-Since}
+        request-header field.
+
+    \item[Pull Git Branch] Sherlok currently supports selecting specific commit, branch or tag in
+        configuration variable when working with Git repositories. But similarly to HTTP resources,
+        once the data has been fetched and cached it won't be updated until it has been clean. It
+        would be convenient to get automatic update from upstream. This could either be simply
+        implemented by pulling the new history at periodic intervals, or by using web hooks or
+        equivalent techniques. But Sherlok would have to be very careful and do it only when the
+        resources are not in use by any pipeline or it would risk corrupting running engines.
+
+    \item[Improve Download Strategy] While the current implementation works well, there are a few
+        area that could benefit from optimisation. For example, naively cloning the whole Git
+        repository with its complete history only to checkout a specific commit or tag is really
+        under-efficient. Instead, for this specific case, downloading only the most recent history
+        from the server is much faster. This can be archived with the ``\verb#--depth 1#'' option of
+        Git command line.
+
+\end{description}
+
 
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
