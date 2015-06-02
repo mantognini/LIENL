@@ -552,13 +552,13 @@ use RUTA to generate pipeline automatically for the user from a simpler descript
 parameters than raw XML as follows:
 
 \begin{enumerate}
-    \item The user defines the engines with their parameters inside bundles;
-    \item Then he defines the order of engines in a given pipeline;
-    \item When the user wants to annotate a given text with the pipeline, Sherlok converts the
+    \item the user defines the engines with their parameters inside bundles;
+    \item then he defines the order of engines in a given pipeline;
+    \item when the user wants to annotate a given text with the pipeline, Sherlok converts the
         engines, with their configured parameters, used by the pipeline into XML descriptions;
     \item Sherlok generates a RUTA script that uses the engine descriptions in the order of the
         pipeline;
-    \item And finally, Sherlok runs the RUTA script and return the annotations back to the user.
+    \item and finally, Sherlok runs the RUTA script and return the annotations back to the user.
 \end{enumerate}
 
 Additionally, Sherlok allows users to use the full RUTA language in pipelines to create even more
@@ -832,7 +832,8 @@ runtime, we can go further and propose a flexible integration system for resourc
 We can use the fact that resources are identified when configuring annotators to let Sherlok
 download them automatically on-demand, similarly to regular Maven dependencies for the actual
 annotator implementation. To do that, we add the ability to define and use \emph{configuration
-variables} in bundles and pipelines.
+variables} in bundles and pipelines that will, after the resources have been downloaded to an
+internal directory of Sherlok, be substituted by the actual path to the corresponding resources.
 
 For example, Listing~\ref{lst:sentence_annotator_config} shows how the \ID{SentenceAnnotator} engine
 can be defined in a bundle with
@@ -881,24 +882,26 @@ When defining a pipeline in Sherlok that uses RUTA scripting elements, users mig
 fetch runtime resources as well. Therefore, we added the same ability to define configuration
 variables inside pipelines. Moreover, Sherlok is capable of downloading remote resource over HTTP as
 shown in Listing~\ref{lst:countries_pipeline_config} where a list of countries is downloaded when
-the pipeline is used.
+the pipeline is used. The only particularity with resources that are used directly in RUTA scripts
+is that they need to be in a special mode because the underlying path needs to be computed slightly
+differently.
 
 \begin{lstlisting}[float,language=json,
                    caption=Configuration of the \ID{countries} pipeline.,
                    label=lst:countries_pipeline_config]
 {
-  "name" : "countries",
-  "version" : "1",
-  "description" : "Example that annotates countries",
-  "domain" : "examples",
-  "config" : {
-    "countries" : {
-      "type" : "http",
-      "url" : "https://example.com/countries.txt",
-      "mode" : "ruta"
+  "name": "countries",
+  "version": "1",
+  "description": "Example that annotates countries",
+  "domain": "examples",
+  "config": {
+    "countries": {
+      "type": "http",
+      "url": "https://example.com/countries.txt",
+      "mode": "ruta"
     }
   },
-  "script" : [
+  "script": [
     "WORDLIST CountriesList = '$countries';",
     "DECLARE Country;",
     "Document{-> MARKFAST(Country, CountriesList)};"
