@@ -826,13 +826,116 @@ bluima code base which weighs more than 700MB (with its history).
 \subsection{Configuration in Sherlok}
 \label{sec:config_in_sherlok}
 
-\TODO{where? -> pipeline + bundle (examples) + file structure}
+Now that we have system that allows resources to be located anywhere on the filesystem and used at
+runtime, we can go further and propose a flexible integration system for resources in Sherlok.
 
-\TODO{how? Git/http/test + can easily be extended}
+We can use the fact that resources are identified when configuring annotators to let Sherlok
+download them automatically on-demand, similarly to regular Maven dependencies for the actual
+annotator implementation. To do that, we add the ability to define and use \emph{configuration
+variables} in bundles and pipelines.
 
-\TODO{where the data is saved and how it can be cleaned if needed}
+For example, Listing~\ref{lst:sentence_annotator_config} shows how the \ID{SentenceAnnotator} engine
+can be defined in a bundle with
+\begin{enumerate*}[label=\itshape\alph*\upshape)]
+    \item its Java dependencies using Maven artefacts (here the only dependency is
+        \ID{bluima\_opennlp} which contains the Java class \ID{ch.epfl.bbp.uima.ae.SentenceAnnotator});
+    \item and its runtime resources (here the trained model \PATH{SentDetectGenia.bin.gz} from the
+        master branch of \ID{bluima\_resources} Git repository).
+\end{enumerate*}
 
-\TODO{class diagram?}
+\begin{lstlisting}[float,language=json,
+                   caption=Configuration of \ID{SentenceAnnotator} in a Sherlok bundle.,
+                   label=lst:sentence_annotator_config]
+{
+  "name": "bluima.sentence",
+  "domain": "examples",
+  "version": "1.0.1",
+  "dependencies": [
+    {
+      "value": "ch.epfl.bbp.nlp:bluima_opennlp:1.0.1"
+    }
+  ],
+  "config": {
+    "bluima": {
+      "type": "git",
+      "url":
+        "https://github.com/BlueBrain/bluima_resources.git",
+      "ref": "master"
+    }
+  },
+  "engines": [
+    {
+      "name": "SentenceAnnotator",
+      "class": "ch.epfl.bbp.uima.ae.SentenceAnnotator",
+      "parameters": {
+        "modelFile": [
+          "$bluima/opennlp/sentence/SentDetectGenia.bin.gz"
+        ]
+      }
+    }
+  ]
+}
+\end{lstlisting}
+
+When defining a pipeline in Sherlok that uses RUTA scripting elements, users might want also to
+fetch runtime resources as well. Therefore, we added the same ability to define configuration
+variables inside pipelines. Moreover, Sherlok is capable of downloading remote resource over HTTP as
+shown in Listing~\ref{lst:countries_pipeline_config} where a list of countries is downloaded when
+the pipeline is used.
+
+\begin{lstlisting}[float,language=json,
+                   caption=Configuration of the \ID{countries} pipeline.,
+                   label=lst:countries_pipeline_config]
+{
+  "name" : "countries",
+  "version" : "1",
+  "description" : "Example that annotates countries",
+  "domain" : "examples",
+  "config" : {
+    "countries" : {
+      "type" : "http",
+      "url" : "https://example.com/countries.txt",
+      "mode" : "ruta"
+    }
+  },
+  "script" : [
+    "WORDLIST CountriesList = '$countries';",
+    "DECLARE Country;",
+    "Document{-> MARKFAST(Country, CountriesList)};"
+  ]
+}
+\end{lstlisting}
+
+Yet, downloading remote resources can be costly and should only be done when the resources are
+needed and not repeated unless needed. This is why Sherlok will cache resources once they have been
+fetched the first time they are used. Conversely, keeping resources that are not used can be costly
+for the system administrators. Hence why they can be removed through REST calls, such as \REST{DELETE
+/clean/runtime\_resources} that will remove any downloaded resources.
+
+Additionally to Git and HTTP configuration variables, Sherlok also supports basic text variable and
+is designed to be easily extended to support more type of remote resources, such as SVN or Mercurial
+repositories, remote files over SSH or any other communication protocol.
+
+To support a new protocol, Sherlok code base needs to be extended as follows:
+
+\begin{enumerate}
+    \item a new class implementing the \ID{ConfigVariable} Java interface and supporting the new
+        protocol needs to be created;
+    \item the \ID{ConfigVariableFactory.factory} method needs to be augmented to create the new kind of
+        variable when appropriate;
+    \item and, optionally, the \ID{ConfigVariableFactory.cleanerFactory} method can be extended to
+        support cleaning resources of the new kind.
+\end{enumerate}
+
+And to conclude this section, Figure~\ref{fig:sherlok_load_pipeline} depicts how bundles and pipelines
+are combined together to generate the underlying RUTA script that Sherlok will use to annotate text.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{res/sherlok_load_pipeline.png}
+    \caption{Part of Speech Pipeline}
+    \label{fig:sherlok_load_pipeline}
+\end{figure}
 
 \subsection{Possible Extensions}
 

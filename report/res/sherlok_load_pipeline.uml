@@ -1,0 +1,30 @@
+@startuml
+
+:Start handling annotation query.;
+note left
+    When the user requests
+    annotating some text
+    through a pipeline.
+end note
+
+if (Is the pipeline in cache?) then (yes)
+else (no)
+    :Read pipeline definition.;
+    :For each engine in the pipeline, read
+    its definition from the bundles and
+    download the Maven dependencies.;
+    :For each configuration variable
+    used in the pipeline or engines
+    definition, download the associated
+    resources if it isn't in cache.;
+    :Create the XML description for
+    each engines and create the RUTA
+    script for the pipeline itself.;
+    :Save the pipeline in cache.;
+endif
+
+:Run the RUTA script corresponding
+to the pipeline.;
+:Send the annotations to the user.;
+
+@enduml
