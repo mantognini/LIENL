@@ -16,11 +16,11 @@
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{pifont}
-\usepackage{enumitem}
 %\usepackage{bera}
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{xspace}
+\usepackage[inline]{enumitem}
 
 \setlist{parsep=0pt,listparindent=\parindent}
 
@@ -580,7 +580,7 @@ Both bluima and Sherlok build system are based on Apache Maven~\cite{maven}, whi
 to define how a Java project should be compiled, packaged, tested and much more. One important
 feature of Maven is its ability to download dependencies from centralised repositories where
 developers can publish their releases. At the beginning of this project, however, bluima was not yet
-available in Maven central which meant that to use it one had to clone its git repository, compile
+available in Maven central which meant that to use it one had to clone its Git repository, compile
 and install it.
 
 Yet, publishing bluima to Maven Central would not suffice to solve a bigger issue. Bluima widely
@@ -786,22 +786,49 @@ to access resources. This is why it was selected and implemented in this project
 
 \subsection{Impact on bluima}
 
-\TODO{minor refactoring}
+One of the important aspect of the adopted solution is that it is actually easy to implement: bluima
+only need some minor refactoring and it can be extended to other project easily, regardless of their
+implementation language or tools.
 
-\TODO{add path parameter for all files/directories}
+Because we now want to work only with generic paths, the refactoring mostly consists in adding
+configuration parameters to annotators to handle custom resource locations. For example, the
+\VAR{modelFile} parameter of \ID{SentenceAnnotator} should be capable of loading a file from
+wherever on the disk.
 
-\TODO{deprecated/remove code that still uses the global variable}
+Usually this refactoring is trivial: we only need to introduce an extra parameter to compute paths
+to files or directories. And since this only adds flexibility, we don't see any downside to this
+technique.
 
-\TODO{how tests are impacted}
+However, this implies that some part of the current code base of bluima need to get upgraded,
+deprecated or even removed. For example, the \ID{OpenNlp\-Helper} class is a utility to load NLP
+annotators, such as \ID{SentenceAnnotator}, and configure them with the models trained on the
+PennBio corpus. But since this utility uses a fixed path based on the global variable
+\VAR{BLUIMA\_HOME} to locate model resources, it cannot be used as is. For this specific case, it is
+easier to simply deprecate it for mainly two reasons:
+\begin{enumerate*}[label=\itshape\alph*\upshape)]
+    \item using the NLP annotators directly is straightforward;
+    \item and more importantly, this proxy is not compatible with RUTA and Sherlok scripting system.
+\end{enumerate*}
 
-\TODO{Git submodules for resources for bluima}
+Additionally, unit tests need to be refactored to take into account that using an environment
+variable is no longer reliable. Fortunately, this is rather trivial for bluima since its build
+system is Maven: unit tests can be configured through the \ID{maven-surefire-plugin} at compile
+time, without any user interaction, to set a Java property that represent the root directory of all
+bluima resources. Then, the refactoring of tests is as simple as using the newly introduced Java
+property instead of a system-wide variable.
+
+Finally, because annotators are now independent of the location of their resource files, we can
+move the resources into a separate Git repository and include it in bluima with a Git submodule. As
+we will see in the Section~\ref{sec:config_in_sherlok}, this has the nice property of allowing
+Sherlok to download only those resources at runtime, and thus without the full bluima code base
+which weighs more than 700MB (with its history).
 
 \subsection{Configuration in Sherlok}
 \label{sec:config_in_sherlok}
 
 \TODO{where? -> pipeline + bundle (examples) + file structure}
 
-\TODO{how? git/http/test + can easily be extended}
+\TODO{how? Git/http/test + can easily be extended}
 
 \TODO{where the data is saved and how it can be cleaned if needed}
 
@@ -813,9 +840,9 @@ to access resources. This is why it was selected and implemented in this project
 
 \TODO{auto update for HTTP (using rfc + download if newer)}
 
-\TODO{auto update for git branches (support for git hooks, \dots)}
+\TODO{auto update for Git branches (support for Git hooks, \dots)}
 
-\TODO{improve git download strategy (if SHA, depth 1, \dots)}
+\TODO{improve Git download strategy (if SHA, depth 1, \dots)}
 
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
