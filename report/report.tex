@@ -5,6 +5,7 @@
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[toc,page]{appendix}
 \usepackage{titlesec}
 \usepackage{cite}
 \usepackage{hyperref}
@@ -17,7 +18,6 @@
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{pifont}
 %\usepackage{bera}
-\usepackage{xcolor}
 \usepackage{listings}
 \usepackage{xspace}
 \usepackage[inline]{enumitem}
@@ -1011,10 +1011,27 @@ implement.
 \end{description}
 
 
+
+
+\section{Future Work}
+
+\TODO{ideas? support for more variable url pattern (svn, ...) }
+\TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven \JAR (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
+
+\TODO{text extractor}
+
+%provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
+%for the user. Text adaptors can extract more than just the raw text. For example, a PDF extractor
+%could include information about text emphasis, whether a word is part of a section title, if proper
+%name is an author or replace images by a text description.
+
+
+\begin{appendices}
+
 \section{Packaging: a first approach that didn't work}
 \label{sec:packaging1}
 
-\TODO{find better title} \TODO{Move to appendix}
+\TODO{find better title}
 
 The initial idea was to base the system on Apache Maven \TODO{ref}. However, while implementing the
 strategy described below we realised that it was not as flexible as predicted. A better alternative
@@ -1160,17 +1177,8 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 \TODO{explain how this gets configured in Sherlok}
 
 
-\section{Future Work}
 
-\TODO{ideas? support for more variable url pattern (svn, ...) }
-\TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven \JAR (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
-
-\TODO{text extractor}
-
-%provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
-%for the user. Text adaptors can extract more than just the raw text. For example, a PDF extractor
-%could include information about text emphasis, whether a word is part of a section title, if proper
-%name is an author or replace images by a text description.
+\end{appendices}
 
 \begin{thebibliography}{99}
 
