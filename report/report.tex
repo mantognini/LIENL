@@ -1028,19 +1028,84 @@ implement.
 
 \section{Conclusion \& Future Development}
 
-\TODO{ideas? support for more variable url pattern (svn, ...) }
-\TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven \JAR (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
+With this project we have shown that Sherlok can be used to write pipelines for general NLP
+processing. For example, we were able to create a simple pipeline to detect sentences, but more
+conclusively we also have created a full brain region detection pipeline, based on
+jSRE~\cite{jsre_2006}, that is displayed in Listing~\ref{lst:brain_region_pipeline_jsre}.
+Furthermore, we have derived this pipeline into two variants: one using a top-down approach, the
+other using a rule-based approach.
 
-\TODO{text extractor}
+\begin{lstlisting}[float,language=json,
+                   caption=jSRE brain region pipeline,
+                   label=lst:brain_region_pipeline_jsre]
+{
+  "name": "bluima.regions_jsre",
+  "version": "1.0.1",
+  "description": "annotate brain regions",
+  "domain": "bluima",
+  "script": [
+    "ENGINE SentenceAnnotator:1.0.1;",
+    "ENGINE TokenAnnotator:1.0.1;",
+    "ENGINE PosTagAnnotator:1.0.1;",
+    "ENGINE BlueBioLemmatizer:1.0.1;",
+    "ENGINE MeasureRegexAnnotator:1.0.1;",
+    "ENGINE PruneMeasuresAnnotator:1.0.1;",
+    "ENGINE LinnaeusAnnotator:1.0.1;",
+    "ENGINE BrainRegionAnnotator:1.0.1;",
+    "ENGINE KeepLargestBrainRegionAnnotator:1.0.1;",
+    "ENGINE ExtractSameBrainRegionCoocurrences:1.0.1;",
+    "ENGINE JsreBrainRegionFilterAnnotator:1.0.1;",
+    "ENGINE KeepLargestCooccurrenceAnnotator:1.0.1;"
+  ]
+}
+\end{lstlisting}
 
-%provided that there is an adaptor to extract the actual text, and pull out the interesting metadata
-%for the user. Text adaptors can extract more than just the raw text. For example, a PDF extractor
-%could include information about text emphasis, whether a word is part of a section title, if proper
-%name is an author or replace images by a text description.
+A fourth technique to detect brain regions is based on \ID{ConceptMapper} from UIMA Addons and
+Sandbox~\cite{uima_sandbox}. \ID{ConceptMapper} is defined as follow in its documentation:
 
-\TODO{why verifying a strategy with a simple example is not good enough}
+\begin{quotation}
+    [It] is a highly configurable, high performance dictionary lookup tool, implemented as a UIMA
+    component. Using one of several matching algorithms, it maps entries in a dictionary onto input
+    documents, producing UIMA annotations.
+\end{quotation}
 
-\TODO{discuss ConceptMapper}
+However, it is not directly compatible with Sherlok bundle and pipeline system as it is already in
+itself an abstraction over UIMA components. Nevertheless, we believe that some mechanism could be
+set up to accommodate the integration of this powerful tool into Sherlok.
+
+The challenge would be to make users able to express in bundles and pipeline descriptions their
+intention to use \ID{ConceptMapper}, which basically takes as input a XML file containing
+essentially:
+\begin{enumerate*}[label=\itshape\alph*\upshape)]
+
+    \item the configuration parameters description;
+
+    \item the configuration parameters values;
+
+    \item the UIMA type system for annotations.
+
+\end{enumerate*}
+The first point could be abstracted with a uimaFIT engine written in Java and the second correspond
+to the configuration of such engine in a bundle. The third one could be extrapolated from Sherlok's
+knowledge of the different engines used in a pipeline or provided by the user.
+
+However, the tricky part is that one of the configuration parameters of \ID{ConceptMapper} is a XML
+description of a tokenizer to interpret data from the input dictionary. Since this description can
+be generated from a uimaFIT engine, one could devise a mechanism in Sherlok to automatically
+generate it from a selected tokenizer engine with some special syntax in bundle configuration.
+
+On a different topic for improvement, and independently of the extensions mentioned in
+Section~\ref{sec:config_variable_extensions}, one could make Sherlok capable of downloading the text
+that the user wants to annotate through common protocol such as HTTP or SSH: instead of using
+\REST{GET /annotate/<pipeline>?text=<input>}, we could imagine that users would specify the remote
+URL where the text is hosted.
+
+Additionally, Sherlok and bluima could be extended to fully support input in different format, such
+as PDF or HTML. This is possible by using special engines, called text adaptor, at the beginning of
+the pipelines that would extract the actual text from the input file and pull out the interesting
+metadata for the user. Those text adaptors could extract more than just the raw text. For example, a
+PDF extractor could include information about text emphasis, whether a word is part of a section
+title, if proper name is an author or replace images by a text description.
 
 \clearpage
 \begin{appendices}
@@ -1317,6 +1382,10 @@ the resource file.
 \bibitem{uimafit}
     Apache uimaFIT,
     \href{https://uima.apache.org/uimafit.html}{uima.apache.org/uimafit.html}
+
+\bibitem{uima_sandbox}
+    Apache UIMA Addons and Sandbox
+    \href{https://uima.apache.org/sandbox.html}{uima.apache.org/sandbox.html}
 
 \bibitem{uimafit_2009}
     Building Test Suites for UIMA Components,
