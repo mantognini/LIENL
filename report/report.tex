@@ -454,26 +454,59 @@ properly after updating Sherlok or the engines' dependencies.
 Bluima is an open-source collection of UIMA readers~\cite{uima} augmented by multiple engines
 developed at the Blue Brain Project~\cite{bbp} to perform large-scale information extraction from
 the neuroscientific literature. It includes for example a species annotator based on the Linnaeus
-library~\cite{linnaeus}, or the OpenNLP toolkit~\cite{opennlp} to perform Part of Speech tagging,
-sentence splitting and more. The complete list of subprojects is detailed in
-Table~\ref{tab:bluima_subprojects}.
+library~\cite{linnaeus_2010}, or the OpenNLP toolkit~\cite{opennlp} to perform Part of Speech
+tagging, sentence splitting and more. Table~\ref{tab:bluima_subprojects} lists the major subprojects
+used by bluima annotator engines.
 
 \begin{table}[h]
     \centering
     \begin{tabularx}{\tablewidth}{@{} l Y @{}} % no margin at extremum
         \toprule
 
-        OpenNLP~\cite{opennlp} & a machine learning based toolkit for the processing of natural
-        language text \\
+        OpenNLP~\cite{opennlp} & A machine learning based toolkit for the processing of natural
+        language text. \\
 
         \midrule
 
-        Linnaeus~\cite{linnaeus} & a general-purpose dictionary matching software, capable of
-        processing multiple types of document formats in the biomedical domain \\
+        Linnaeus~\cite{linnaeus_2010} & A general-purpose dictionary matching
+        software, capable of processing multiple types of document formats in the biomedical domain.
+        \\
 
         \midrule
 
-        & \TODO{add the others} \\
+        BANNER~\cite{banner_2008} & A named entity recognition system, primarily
+        intended for biomedical text. \\
+
+        \midrule
+
+        Dragon Toolkit~\cite{dragon_2007} & A Java-based development package for academic use in
+        information retrieval and text mining. \\
+
+        \midrule
+
+        BioAdi~\cite{bioadi_2009} & BioAdi identifies the mapping between SF (Short Form) and LF
+        (Long Form) terms in paper. \\
+
+        \midrule
+
+        langdetect~\cite{langdetect} & A language detection library implemented in plain Java. \\
+
+        \midrule
+
+        JWI~\cite{jwi_2014} & A Java library for interfacing with Wordnet. \\
+
+        \midrule
+
+        jSRE~\cite{jsre_2006} & A Java tool for Relation Extraction. \\
+
+        \midrule
+
+        JULES~\cite{jules} & A collection of UIMA wrappers for OpenNLP. \\
+
+        \midrule
+
+        OSCAR4~\cite{oscar_2011} & An open source extensible system for the automated annotation of
+        chemistry in scientific articles. \\
 
         \bottomrule
     \end{tabularx}
@@ -1157,7 +1190,7 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
     Bluima: a UIMA-based NLP Toolkit for Neuroscience,
     by R. Richardet,
     Proceedings of the 3rd Workshop on Unstructured Information Management Architecture, Darmstadt,
-    Germany, 2013, pp. 34–41, Gesellschaft für Sprachtechnologie und Computerlinguistik.
+    Germany, 2013, pp. 34–41, Gesellschaft für Sprachtechnologie und Computerlinguistik
 
 \bibitem{json}
     JSON format,
@@ -1190,7 +1223,7 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 \bibitem{ruta_2014}
     UIMA Ruta: Rapid development of rule-based information extraction applications,
     by P. KLUEGL, M. TOEPFER, P.-D. BECK, G. FETTE and F. PUPPE,
-    Natural Language Engineering,
+    Natural Language Engineering
 
 \bibitem{maven}
     Apache Maven,
@@ -1217,8 +1250,54 @@ absolute path to the resource file with \ID{PARAM\_MODEL}.
 
 \bibitem{linnaeus}
     Linnaeus,
-	\TODO{paper},
     \href{http://linnaeus.sourceforge.net/}{linnaeus.sourceforge.net}
+
+\bibitem{linnaeus_2010}
+    LINNAEUS: A species name identification system for biomedical literature,
+    by M. Gerner, G. Nenadic and C. M. Bergman,
+    BMC Bioinformatics 2010, 11:85
+
+\bibitem{banner_2008}
+    BANNER: An executable survey of advances in biomedical named entity recognition,
+    by R. Leaman and G. Gonzalez,
+    Pacific Symposium on Biocomputing 13:652-663(2008)
+
+\bibitem{dragon_2007}
+    Dragon Toolkit: Incorporating Auto-learned Semantic Knowledge into Large-Scale Text Retrieval and Mining,
+    by X. Zhou, X. Zhang and X. Hu,
+    Proceedings of the 19th IEEE International Conference on Tools with Artificial Intelligence
+    (ICTAI), October 29-31, 2007, Patras, Greece
+
+\bibitem{bioadi_2009}
+    BIOADI: a machine learning approach to identifying abbreviations and definitions in biological
+    literature,
+    by C.-J. Kuo, M. Ling, K.-T. Lin, C.-N. Hsu,
+    BMC Bioinformatics 2009, 10(Suppl 15):S7
+
+\bibitem{langdetect}
+    Language Detection Library for Java,
+    by N. Shuyo,
+    \href{http://code.google.com/p/language-detection/}{code.google.com/p/language-detection}
+
+\bibitem{jwi_2014}
+    Java Libraries for Accessing the Princeton Wordnet: Comparison and Evaluation,
+    by M. A. Finlayson,
+    Proceedings of the 7th Global Wordnet Conference. Tartu, Estonia
+
+\bibitem{jsre_2006}
+    Exploiting Shallow Linguistic Information for Relation Extraction from Biomedical Literature,
+    by C. Giuliano and A. Lavelli,
+    Proceedings of the 11th Conference of the European Chapter of the Association for Computational
+    Linguistics (EACL 2006), Trento, Italy, 3-7 April 2006
+
+\bibitem{jules}
+    JULES, UIMA Analysis Engine,
+    \href{http://www.julielab.de/Resources/JCoRe+NLP+Tools/Download/Documentation/UIMA+Analysis+Engine-p-103.html}{julielab.de}
+
+\bibitem{oscar_2011}
+    OSCAR4: a flexible architecture for chemical text-mining,
+    by D. M. Jessop, S. E. Adams, E. L. Willighagen, L. Hawizy and P. Murray-Rust,
+    Journal of Cheminformatics 2011, 3:41
 
 \bibitem{genia}
     GENIA corpus,
