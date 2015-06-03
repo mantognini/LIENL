@@ -638,8 +638,6 @@ cost low, allow resources to refer to one-another, make it possible to group fil
 \emph{batches}, avoid runtime performance penalties wherever possible and remove as little
 flexibility from the users as possible.
 
-\TODO{add § for runtime safety}
-
 \subsubsection{Refactoring and Maintenance}
 
 The first idea that we explored was to package resources inside \JAR files and use Maven to
@@ -764,6 +762,14 @@ sub-archives, then accessing those files via a proxy and an extra layer of resou
 potentially extracting sub-archives into a temporary directory, and by this mean forcing the user to
 use a specific versioning system as DKPro-like systems do.
 
+The \JAR-based system that we present in Appendix~\ref{sec:packaging1} can, if needed, add an
+additional runtime safety by ensuring that resources are present. However, we argue that this
+additional security layer is not really necessary since it is rather trivial to detect a missing
+file from an engine at runtime and propagate an error to the user, but also because this kind of
+situation should not occur at all once the pipelines have been tested. Moreover, we can directly
+make some basic checks in Sherlok that are in practice sufficient. For these reasons we don't
+consider it as a critical downside.
+
 From bluima perspective, the user could simply install the configuration files in a directory of his
 choosing and configure the engines with paths to the actual resources without using any system-wide
 variable. Withal, since this simpler approach does not enforce any versioning mechanism at all, the
@@ -777,6 +783,15 @@ This last solution allies the flexibility of using Java \ID{File} objects, and t
 only little refactoring of bluima annotators, with the power of external, well-establish and
 powerful SCM tools in addition to avoid the limitation of having to rely solely on \ID{InputStream}
 to access resources. This is why it was selected and implemented in this project.
+
+We present in Table~\ref{tab:packaging_strategies} a quick summary of the pros and cons of all the
+techniques we have explored for this project. The four ``\emph{proxy-based}'' versions are detailed
+in Appendix~\ref{sec:packaging1}. The first column reports the workload needed to implement and use
+the corresponding approaches in bluima. The second one indicates if the code can be constructed in a
+concise way (DRY standing for \emph{Don't Repeat Yourself}). The flexibility column tells how easy
+it is for users to integrate their resources. The fourth one represents the amount of work needed to
+propagate a new version of some resources to the packaging system. And finally the last one states
+whether or not the system integrates a runtime safety net.
 
 \begin{table}[h]
     \centering
@@ -816,8 +831,6 @@ to access resources. This is why it was selected and implemented in this project
     \caption{Packaging Strategies Comparison}
     \label{tab:packaging_strategies}
 \end{table}
-
-\TODO{add explanation about the table and reference to index for the ``Proxy-Based''}
 
 \subsection{Impact on bluima}
 
@@ -976,6 +989,7 @@ are combined together to generate the underlying RUTA script that Sherlok will u
 \end{figure}
 
 \subsection{Possible Extensions}
+\label{sec:config_variable_extensions}
 
 The implementation of the previous concept in this project proves that this strategy works well for
 Sherlok. But yet users might want more features, such as more remote protocol support (SVN, hg, SSH,
@@ -1298,7 +1312,6 @@ the resource file.
 
 \bibitem{uima}
     Apache UIMA,
-	\TODO{paper},
     \href{https://uima.apache.org/}{uima.apache.org}
 
 \bibitem{uimafit}
@@ -1401,7 +1414,6 @@ the resource file.
 
 \bibitem{genia}
     GENIA corpus,
-	\TODO{paper},
     \href{http://www.nactem.ac.uk/aNT/genia.html}{www.nactem.ac.uk/aNT/genia.html}
 
 
