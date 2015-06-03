@@ -429,7 +429,7 @@ they cover.
 %\end{lstlisting}
 
 \begin{lstlisting}[float,language=json,
-                   caption=Excerpt of JSON output for sentence detection.,
+                   caption=Excerpt of JSON output for sentence detection,
                    label=lst:json_sententence_detection]
 "DocumentAnnotation" : [
   { "begin" : 0,    "end" : 328,  "language" : "en" }
@@ -539,7 +539,7 @@ pipeline of engines is run.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\linewidth]{res/uimafit.png}
-    \caption{Part of Speech Tagging uimaFIT pipeline}
+    \caption{Part of Speech tagging uimaFIT pipeline}
     \label{fig:pos_pipeline_uimafit}
 \end{figure}
 
@@ -600,12 +600,14 @@ powerful tools. And in order to make configuration more flexible, as we will see
 or pipelines to download automatically remote resources.
 
 \section{Packaging Strategy}
+\label{sec:packaging2}
 
 Initially all resources used by bluima's engines, such as models trained on the GENIA corpus
 \cite{genia} to tag part of speech elements, were accessed via a system wide path variable. In this
 section we will discuss the adopted strategy to improve this system and make bluima
-``path-agnostic'' in order to improve its integration in Sherlok. In the Appendix \TODO{?} we show a
-few other alternatives that were also considered during this project.
+``path-agnostic'' in order to improve its integration in Sherlok. In the
+Appendix~\ref{sec:packaging1} we show a few other alternatives that were also considered during this
+project.
 
 \subsection{Initial Situation}
 
@@ -641,7 +643,7 @@ flexibility from the users as possible.
 \subsubsection{Refactoring and Maintenance}
 
 The first idea that we explored was to package resources inside \JAR files and use Maven to
-distribute them similarly to what DKpro~\cite{dkpro}~\cite{dkpro_2014} does but in a less complex
+distribute them similarly to what DKPro~\cite{dkpro}~\cite{dkpro_2014} does but in a less complex
 manner for the users.
 
 In a nutshell, packaging resources within \JAR files has two important drawbacks. Firstly, updating
@@ -680,7 +682,7 @@ those would most probably induce performance penalties.
 \subsubsection{Resource Interdependency}
 
 The \ID{LinnaeusAnnotator} also illustrates another feature that engines might need: the ability to
-reference a resource file from another resource file via relative paths. With DKpro-like solutions,
+reference a resource file from another resource file via relative paths. With DKPro-like solutions,
 the usage of stream to read resources content makes it much harder to allow such behaviour.
 
 Workarounds for this specific issue usually imply modifying the engines and their underlying
@@ -696,7 +698,7 @@ configuration files used together to set up an annotator or its dependencies. Fo
 Nevertheless, it would be very verbose and painful to denote each and every of the ~30 files one by
 one in the configuration of the engine. Hence, considering a batch of files simply as a collection
 of files without a specific naming structure is not optimal. Depending on whether or not we base the
-resource packaging system on a system similar to DKpro, the consequences differ:
+resource packaging system on a system similar to DKPro, the consequences differ:
 
 \begin{itemize}
 
@@ -760,7 +762,7 @@ We argue that the installation process for runtime resources could be much simpl
 resources into \JAR files in the first place, potentially aggregating batch of files together in
 sub-archives, then accessing those files via a proxy and an extra layer of resource identifiers,
 potentially extracting sub-archives into a temporary directory, and by this mean forcing the user to
-use a specific versioning system as DKpro-like systems do.
+use a specific versioning system as DKPro-like systems do.
 
 From bluima perspective, the user could simply install the configuration files in a directory of his
 choosing and configure the engines with paths to the actual resources without using any system-wide
@@ -787,7 +789,7 @@ to access resources. This is why it was selected and implemented in this project
 
         \toprule
 
-        DKpro-Like~\cite{dkpro} & \XMARK & \CMARK & (\CMARK) & \XMARK & \XMARK \\
+        DKPro-Like~\cite{dkpro} & \XMARK & \CMARK & (\CMARK) & \XMARK & \XMARK \\
 
         \midrule
 
@@ -878,7 +880,7 @@ can be defined in a bundle with
 \end{enumerate*}
 
 \begin{lstlisting}[float,language=json,
-                   caption=Configuration of \ID{SentenceAnnotator} in a Sherlok bundle.,
+                   caption=Configuration of \ID{SentenceAnnotator} in a Sherlok bundle,
                    label=lst:sentence_annotator_config]
 {
   "name": "bluima.sentence",
@@ -920,7 +922,7 @@ is that they need to be in a special mode because the underlying path needs to b
 differently.
 
 \begin{lstlisting}[float,language=json,
-                   caption=Configuration of the \ID{countries} pipeline.,
+                   caption=Configuration of the \ID{countries} pipeline,
                    label=lst:countries_pipeline_config]
 {
   "name": "countries",
@@ -969,7 +971,7 @@ are combined together to generate the underlying RUTA script that Sherlok will u
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{res/sherlok_load_pipeline.png}
-    \caption{Part of Speech Pipeline}
+    \caption{Sherlok pipeline loading procedure}
     \label{fig:sherlok_load_pipeline}
 \end{figure}
 
@@ -1010,7 +1012,7 @@ implement.
 
 \end{description}
 
-\section{Future Work}
+\section{Conclusion \& Future Development}
 
 \TODO{ideas? support for more variable url pattern (svn, ...) }
 \TODO{overview figure, e.g.  Sherlok's Linnaeus bundle, that downloads the bluima Maven \JAR (that itself depends on the Linnaeus Maven library) and the Linnaeus config file; Sherlok's Linnaeus pipeline that uses them to annotate species}
@@ -1022,17 +1024,19 @@ implement.
 %could include information about text emphasis, whether a word is part of a section title, if proper
 %name is an author or replace images by a text description.
 
+\TODO{why verifying a strategy with a simple example is not good enough}
 
+\TODO{discuss ConceptMapper}
+
+\clearpage
 \begin{appendices}
 
-\section{Packaging: a first approach that didn't work}
+\section{Proxy-Based Packaging Strategy}
 \label{sec:packaging1}
 
-\TODO{find better title}
-
-The initial idea was to base the system on Apache Maven \TODO{ref}. However, while implementing the
+The initial idea was to base the system on Apache Maven~\cite{maven}. However, while implementing the
 strategy described below we realised that it was not as flexible as predicted. A better alternative
-is presented in Section \TODO{ref{sec:packaging2}}. This section describes our first approach.
+is presented in Section~\ref{sec:packaging2}. This section describes our first approach.
 
 One of the first objective of this project was the disassociation of algorithms (engine annotators)
 and their different resources (model files, configuration files) and devise a packaging system,
@@ -1041,16 +1045,16 @@ user define pipelines using specific annotators and models.
 
 \subsection{Packaging}
 
-\TODO{explain that packages would be released on public repo, and thus making them available}
-
-\TODO{quickly present DKpro packaging strategy \& ant script. Say why we did not go with it.}
-
 With Maven, main idea is to store a set of resources, such as dataset trained on a specific corpus
-of texts, in a \JAR file and access them in read-only mode at runtime. Package dependencies can be
-used to ensure that some files are available at runtime and ideally package version should be used
-to let the user update resources independently of the algorithms.
+of texts, in a \JAR file and access them in read-only mode at runtime. And after the packaging of
+resources is done, the {\JAR}s are published on a public repository such as Maven Central. Then
+package dependencies can be used to ensure that some files are available at runtime. And, ideally,
+package versions should be used to let users update resources independently of the algorithms.
 
-\TODO{Insert example, e.g. Sentence}
+Tools like DKPro~\cite{dkpro} already provide method to ship resource alongside algorithm. However,
+we decided to use a different system because DKPro is rather complex, although flexible, and because
+it heavily relies on ANT scripting build system to export data into \JAR files, which is not
+straightforwardly integrable into Maven build system.
 
 It might not be clearly apparent for someone not used to work with Java \JAR-based system, but with
 this approach we cannot modify the resource files at runtime since they have been packaged, and this
@@ -1066,13 +1070,13 @@ Section~\ref{sec:restructuring_bluima}.
 Here we describe three alternatives that we used to contrast alternative strengths and weaknesses
 before concluding with a fourth variant that should match our needs. Below, \ID{ada} and \ID{bob}
 denote two variants of a kind of resource that are compatible with a common algorithm package,
-denoted \ID{algo}. The \ID{using*} packages can be thought as pipelines in the context of
-bluima/sherlok.
+denoted \ID{algo}. The \ID{using*} packages can be thought of as pipelines in the context of
+bluima/Sherlok.
 
-\subsubsection{Version A}
+\subsubsection{Proxy-Based: Version A}
 
 The first system we analysed spread each algorithm and set of resources into individual packages
-that depends on \ID{modeldep}, a proxy utility to access the resource files inside \JAR file. If an
+that depends on \ID{modeldep}, a proxy utility to access the resource files inside \JAR files. If an
 algorithm depends on some resource file then it accepts as input parameter the model name (as a
 string) and uses the proxy to load the file. In this scenario pipeline packages have dependencies
 toward their annotators but also toward specific models as shown in Figure~\ref{fig:pkgsysA}.
@@ -1089,15 +1093,15 @@ Alternatively, to prevent modifications, \ID{using\_my\_algo} could depend on bo
 \begin{figure}
     \centering
     \includegraphics[width=200pt]{res/packaging_version_A.png}
-    \caption{Packaging Version A}
+    \caption{Proxy-based packaging system, version A}
     \label{fig:pkgsysA}
 \end{figure}
 
 
-\subsubsection{Version B}
+\subsubsection{Proxy-Based: Version B}
 
 The second approach is based on Maven's version string: an \ID{algo} will depend on an abstract
-\ID{model} which provide a mechanism to load a specific file from its \JAR file and both \ID{ada}
+\ID{model} which provides a mechanism to load a specific file from its \JAR file and both \ID{ada}
 and \ID{bob} model versions are defined as subversion of \ID{model}. For example, the convention
 could be that if \ID{model} is defined as version \ID{0.1} then \ID{ada} will use the string
 \ID{0.1-ADA} to define its version and the \ID{algo} will accept versions in the range $ [0.1,0.2)
@@ -1114,12 +1118,12 @@ version is available at runtime.
 \begin{figure}
     \centering
     \includegraphics[width=200pt]{res/packaging_version_B.png}
-    \caption{Packaging Version B}
+    \caption{Proxy-based packaging system, version B}
     \label{fig:pkgsysB}
 \end{figure}
 
 
-\subsubsection{Version C}
+\subsubsection{Proxy-Based: Version C}
 
 The third version we studied is the most simple one: as illustrated on Figure~\ref{fig:pkgsysC},
 instead of splitting everything in separate package, only annotators are packaged independently of
@@ -1132,11 +1136,11 @@ packages have to be created to support each combination of models.
 \begin{figure}
     \centering
     \includegraphics[width=200pt]{res/packaging_version_C.png}
-    \caption{Packaging Version C}
+    \caption{Proxy-based packaging system, version C}
     \label{fig:pkgsysC}
 \end{figure}
 
-\subsubsection{The verdict - Version D}
+\subsubsection{Proxy-Based: Version D}
 
 After exploring possibilities offered by the Maven packaging system we analysed how resources and
 engines are related to each others and used by pipelines in bluima. Figure~\ref{fig:pkgsysD} depicts
@@ -1161,7 +1165,7 @@ a filename property.
 \begin{figure}
     \centering
     \includegraphics[width=200pt]{res/packaging_version_D.png}
-    \caption{Packaging Version D}
+    \caption{Proxy-based packaging system, version D}
     \label{fig:pkgsysD}
 \end{figure}
 
@@ -1169,16 +1173,11 @@ a filename property.
 \subsection{Restructuring bluima}
 \label{sec:restructuring_bluima}
 
-\TODO{better explain strategy before details}
-
 Now that the packaging strategy for annotators and their resources has been designed we can actually
-apply it. It was decided to start with a relatively easy annotator -- namely \ID{SentenceAnnotator}
-which is part of OpenNLP -- to make sure our previous decision was indeed viable. The approach was
-based on an iterative process that can be applied to other modules as well. However, let's first
-take a step back and discuss the file hierarchy and how the different modules are related to each
-others.
-
-\subsubsection{File Hierarchy}
+apply it. It was decided to start with a relatively easy annotator --~Namely \ID{SentenceAnnotator}
+which is part of OpenNLP~-- to make sure our previous decision was indeed viable. The approach was
+based on an iterative process that can be applied to other modules as well. But before diving into
+the details, we will first discuss how the different modules in bluima are related to each other.
 
 We wanted to create a structured, yet flexible, file hierarchy for the annotators and their
 resources. Since we are using Maven, we based our design on parent-child relationship in the
@@ -1194,22 +1193,19 @@ algorithms and resources are installed (or tested).
 \subsubsection{Case Study: Converting OpenNLP}
 
 When converting an annotator such as \ID{SentenceAnnotator}, the first thing to do is to identify
-the unit test responsible for its quality \TODO{add details on unit test in §bluima/§sherlok}. In
-this case, the annotator was imported from UIMA \TODO{ref} and it was still based on the XML engine
-descriptor \TODO{ref} \TODO{add explanation/contrast between XML engine descriptor \& java code in
-§bluima}. Therefore, we first have to make it compatible with the new and compact pipeline runner
-from uimaFIT \TODO{ref}.
+the unit test responsible for its quality. In this case, the annotator was converted from a classic
+UIMA~\cite{uima} structure, based on XML description of engines and their configuration, to the more
+modern structure defined by uimaFIT~\cite{uimafit}, which allows a more compact pipeline runner.
 
 Once the unit tests are properly working, we move on to the generation of the resource packages.
-Since this phase is completely repetitive, we devised a script \TODO{ref to wiki} to make the
-developer live less cumbersome: given a resource file, a resource name and a few other technical
-details we can produce a resource package, as described previously, that is ready to be used with an
-annotator.
+Since this phase is completely repetitive, we devised a script to make the developer's live less
+cumbersome: given a resource file, a resource name and a few other technical details we can produce
+a resource package, as described previously, that is ready to be used with an annotator.
 
-However, many annotators are currently using Java \ID{File} parameters, or Java \ID{String}s
-pointing to a local file. Therefore, we have to refactor these annotators and their dependencies in
-order to use \ID{ModelStream} instead. The following strategy was applied to convert PoS, Token and
-Chunk annotator of OpenNLP:
+However, many annotators are currently using Java \ID{File} parameters, or Java \ID{String}s to
+identify files on the local filesystem. Therefore, we have to refactor these annotators and their
+dependencies in order to use \ID{ModelStream} instead. The following strategy was applied to convert
+PoS, Token and Chunk annotator of OpenNLP:
 
 \begin{enumerate}
 
@@ -1229,14 +1225,50 @@ Chunk annotator of OpenNLP:
 
 \end{enumerate}
 
-Finally, at this last point the unit test should be updated to use resource package instead of
-absolute path to the resource file with \ID{PARAM\_MODEL}.
+Finally, at this last point the unit test should be updated to use resource package with
+\ID{PARAM\_MODEL} instead of absolute path to the resource file.
 
-\subsection{Pipeline Configuration in Sherlok}
+However, as discussed in Section~\ref{sec:packaging2}, the third step is not always trivial or quick
+to be implemented. The strategy defined in this section works well for relatively simple engines,
+such as the one from OpenNLP, or for engines with a well-modularised implementation. But for
+closed-source, more complex or engines with a defective software design that cannot withstand
+refactoring easily, this task becomes much harder, if not close to impossible to implement.
 
-\TODO{explain how this gets configured in Sherlok}
+\subsection{Configuration in Sherlok}
 
+Listing~\ref{lst:sentence_annotator_config_old} illustrates how this strategy can then be used in
+Sherlok bundles configuration. Compared to Listing~\ref{lst:sentence_annotator_config} from
+Section~\ref{sec:config_in_sherlok}, here we have one extra Maven dependency
+(\ID{bluima\_sentence\_detector\_genia}) which contains the essentially two things: the model file used
+by \ID{SentenceAnnotator} and a proxy utility class, \ID{GeniaResource}, that will be used to access
+the resource file.
 
+\begin{lstlisting}[float,language=json,
+                   caption=Configuration of \ID{SentenceAnnotator} in a Sherlok bundle with the
+                   proxy-based packaging strategy,
+                   label=lst:sentence_annotator_config_old]
+{
+  "name": "bluima.sentence",
+  "domain": "examples",
+  "version": "0.1",
+  "dependencies": [
+    {
+      "value": "ch.epfl.bbp.nlp:bluima_opennlp:1.0.1",
+      "value":
+        "ch.epfl.bbp.nlp:bluima_sentence_detector_genia:0.1"
+    }
+  ],
+  "engines": [
+    {
+      "name": "SentenceAnnotator",
+      "class": "ch.epfl.bbp.uima.ae.SentenceAnnotator",
+      "parameters": {
+        "model": [ "ch.epfl.bbp.nlp.GeniaResource" ]
+      }
+    }
+  ]
+}
+\end{lstlisting}
 
 \end{appendices}
 
