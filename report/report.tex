@@ -125,9 +125,25 @@
     Artificial Intelligence Laboratory LIA - EPFL
 \end{center}
 
+\vfill
+
 \begin{abstract}
-  \TODO{todo}
+
+    This report presents a new, clever strategy for automatic dependencies handling in Sherlok, an
+    open source, large-scale, text mining, RESTful service based on UIMA technologies like bluima,
+    which focuses on neuroscientific data extraction to help scientists at the Blue Brain Project
+    collecting information such as connections between brain regions from the vast available
+    literature. It also covers some possible extensions to bluima and Sherlok in order to support a
+    wider range of UIMA operations such as \ID{ConceptMappers}, a high performance lookup tool based
+    on matching algorithms to maps entries in a dictionary onto input documents.
+
 \end{abstract}
+
+\vfill
+
+\begin{center}
+    \includegraphics[width = 40mm]{res/epfl-logo}
+\end{center}
 
 \pagenumbering{gobble}
 \newpage
@@ -140,7 +156,7 @@
 
 The neuroscientists at the Blue Brain Project~\cite{bbp}, in their quest to model the human brain,
 have to understand the interactions between the different components of the brain such as cells or
-brain regions and connect their effects with other parts of the brain or other organs.  However,
+brain regions and connect their effects with other parts of the brain or other organs. However,
 since the amount of information is colossal and is obviously not memorisable by individual human
 being or even by a team of researchers, tools need to be created in order to extract the relevant
 data from the scientific literature in a precise and fast manner.
@@ -1027,7 +1043,7 @@ URL where the text is hosted with, for example:
 
 \[
     \REST{GET /annotate/<pipeline>?ssh=<url>}
-\].
+\]
 
 Additionally, Sherlok and bluima could be extended to fully support input in different format, such
 as PDF or HTML. This is possible by using special engines, called text adaptor, at the beginning of
@@ -1067,7 +1083,7 @@ straightforwardly integrable into Maven build system.
 It might not be clearly apparent for someone not used to work with Java \JAR-based system, but with
 this approach we cannot modify the resource files at runtime since they have been packaged, and this
 for mainly two reasons. Firstly, the Java API doesn't provide standard tools to modify such
-archives.  And secondly, if the \JAR file were signed (which is the standard procedure) then
+archives. And secondly, if the \JAR file were signed (which is the standard procedure) then
 modifying its content would actually break the signature and therefore corrupt the archive.
 
 Additionally, the API to access resources inside \JAR files is not based on Java \ID{File} objects.
