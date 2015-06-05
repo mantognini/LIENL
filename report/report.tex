@@ -202,9 +202,15 @@ This project was threefold:
         recognition, measures and units extraction and more~\cite{bluima_2013}.
 \end{itemize}
 
-\TODO{include quick plan of paper}
+The remainder of the report is constructed as follows. Section~\ref{sec:sherlok} further introduces
+Sherlok and its working. Section~\ref{sec:bluima} then presents bluima and sketches how UIMA
+pipelines work. Section~\ref{sec:packaging2} presents the central work of this project, the new
+packaging strategy and how Sherlok can install remote resources automatically for the users, that
+is.  Finally, Section~\ref{sec:conclusion} summarises the work that was done in this project and
+proposes some possible future developments in Sherlok and bluima.
 
 \section{Sherlok}
+\label{sec:sherlok}
 
 Sherlok is an open source service for text information extraction created at the Blue Brain Project
 to extend and popularise bluima engines. However, Sherlok is not restricted to neuroscience and as
@@ -945,6 +951,7 @@ implement.
 \end{description}
 
 \section{Conclusion \& Future Development}
+\label{sec:conclusion}
 
 With this project we have shown that Sherlok can be used to write pipelines for general NLP
 processing. For example, we were able to create a simple pipeline to detect sentences, but more
