@@ -979,7 +979,7 @@ other using a rule-based approach.
 \end{lstlisting}
 
 A fourth technique to detect brain regions is based on \ID{ConceptMapper} from UIMA Addons and
-Sandbox~\cite{uima_sandbox}. \ID{ConceptMapper} is defined as follow in its documentation:
+Sandbox~\cite{uima_sandbox}. \ID{ConceptMapper} is defined as follows in its documentation:
 
 \begin{quotation}
     [It] is a highly configurable, high performance dictionary lookup tool, implemented as a UIMA
@@ -1016,7 +1016,11 @@ On a different topic for improvement, and independently of the extensions mentio
 Section~\ref{sec:config_variable_extensions}, one could make Sherlok capable of downloading the text
 that the user wants to annotate through common protocol such as HTTP or SSH: instead of using
 \REST{GET /annotate/<pipeline>?text=<input>}, we could imagine that users would specify the remote
-URL where the text is hosted.
+URL where the text is hosted with, for example:
+
+\[
+    \REST{GET /annotate/<pipeline>?ssh=<url>}
+\].
 
 Additionally, Sherlok and bluima could be extended to fully support input in different format, such
 as PDF or HTML. This is possible by using special engines, called text adaptor, at the beginning of
