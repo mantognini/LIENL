@@ -217,83 +217,6 @@ match the specific needs of researchers. From the user perspective, only a basic
 the Hypertext Transfer Protocol (HTTP) is required to build queries used to communicate with
 Sherlok.
 
-%\begin{table}[h]
-    %\centering
-    %\begin{tabularx}{1.2\linewidth}{l l >{\hsize=2cm}X Y}
-                %&       & \MULTIROW{2}{Additional Parameters}   &           \\
-        %Method  & Path  &                                       & Action    \\
-
-        %\toprule
-
-        %GET  & \REST{/annotate/<pipeline>}      & text          &
-            %\MULTIROW{2}{Annotates the given text with the selected pipeline (the pipeline version is
-            %optional).} \\
-             %&                                  & version (opt) &  \\
-        %\\ \\ % fix v-spacing
-
-        %\midrule
-
-        %POST & \REST{/annotate/<pipeline>}      & text          &
-            %\MULTIROW{2}{Like the previous one, but the text (and the optional pipeline version) is
-            %posted in JSON format.} \\
-             %&                                  & version (opt) &  \\
-        %\\ \\ % fix v-spacing
-
-        %\midrule
-
-        %GET  & \REST{/pipelines}                &               &
-            %\MULTIROW{1}{Lists the installed pipelines.} \\
-        %% \\ % fix y-spacing
-
-        %\midrule
-
-        %GET  & \multicolumn{2}{ l }{\REST{/pipelines/<pipeline>/<version>}} &
-            %\MULTIROW{1}{Downloads the given version of the mentioned pipeline definition.}  \\
-        %\\ \\ % fix y-spacing
-
-        %\midrule
-
-        %POST & \REST{/pipeline}                 &               &
-            %\MULTIROW{1}{Install the pipeline definition present in the body of the request} \\
-        %\\ \\ % fix y-spacing
-
-        %\midrule
-
-        %DELETE & \REST{/pipeline/<pipeline>/<version>}  &       &
-            %\MULTIROW{1}{Uninstall the given version of the mentioned pipeline} \\
-        %\\ % fix y-spacing
-
-        %\midrule
-
-        %POST & \REST{/test}                     & pipeline      &
-            %\MULTIROW{1}{Runs the tests of the (temporary) pipeline defined in the body of the request.} \\
-        %\\ \\ % fix y-spacing
-
-        %\midrule
-
-        %GET  & \REST{/test/<pipeline>}          & version (opt) &
-            %\MULTIROW{1}{Runs the tests for the given installed pipeline.} \\
-        %\\ % fix y-spacing
-
-        %\midrule
-
-        %GET  & \REST{/reload}                   &               &
-            %\MULTIROW{1}{Reloads Sherlok's settings.} \\
-        %% \\ % fix y-spacing
-
-        %\midrule
-
-        %\bottomrule
-    %\end{tabularx}
-    %\caption{\TODO{caption me}}
-    %\label{tab:sherlok_rest_api}
-%\end{table}
-
-%\TODO{add resources, cleaning and bundle requests}
-
-%\TODO{actually, this table should be in the doc, not here. Here, just explain the main ones
-%(annotate, test, install and remove)}
-
 While its implementation is written in Java, any language or tool with basic socket support can
 communicate with Sherlok and benefits from its capabilities without going through the frequent
 required hassle to build wrappers to communicate between Java and another language. Additionally,
@@ -542,11 +465,6 @@ pipeline of engines is run.
     \caption{Part of Speech tagging uimaFIT pipeline}
     \label{fig:pos_pipeline_uimafit}
 \end{figure}
-
-% TODO Doc
-%These two tasks are modeled by implementing the \ID{initialize} and \ID{process}, respectively,
-%methods of the Java interface \ID{AnalysisComponent}. +
-%org.apache.uima.fit.component.JCasAnnotator_ImplBase
 
 While uimaFIT is very convenient when writing an UIMA application that is entirely written in Java,
 it becomes much more complex when we want to include a flexible external configuration as we do with
