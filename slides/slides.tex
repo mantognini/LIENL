@@ -1,16 +1,11 @@
 % vim: set tabstop=2 softtabstop=2 shiftwidth=2 textwidth=80: %
 
-\documentclass[xcolor={usenames,dvipsnames}]{beamer}
+\documentclass[10pt, compress, xcolor={usenames,dvipsnames}]{beamer}
 \usepackage[utf8x]{inputenc}
 
-\mode<presentation>
-{
-  \usetheme{m}
-  \usecolortheme{rose}
-  %\setbeamercovered{transparent}
-  \setbeamercovered{invisible}
-  \setbeamercolor*{alerted text}{parent=titlelike}
-}
+%%% Theme and style
+\usetheme{m}
+
 \renewcommand{\emph}[1]{\alert{#1}}
 
 
@@ -99,6 +94,9 @@
 %\compileTreeSlidesfalse
 \compileTreeSlidestrue
 
+\newcommand{\REST}[1]{{\color{NavyBlue}\ttfamily{#1}}}
+
+
 %%% Document info %%%
 
 \title{Large-scale Information Extraction from Neuroscientific Literature}
@@ -140,14 +138,6 @@
   \titlepage
 \end{frame}
 
-% Short-cut for inline listings using "@" (must come after "\titlepage")
-\lstMakeShortInline[%
-  language=json,%
-  flexiblecolumns=false,%
-  mathescape=false,%
-  basicstyle=\color{blue!30!darkgray}\tt]@
-
-
 % No outline, too short a talk...
 % \begin{frame}{Outline}
 %   \tableofcontents
@@ -162,13 +152,25 @@
   TODO
 \end{frame}
 
-\begin{frame}[fragile]{Example -- Lists}
+\begin{frame}[fragile]{Example -- Sentences}
 
-  \begin{verbatim}
-    \REST{GET /annotate/bluima.sentence?text=<\ldots>
-  \end{verbatim}
+  \begin{exampleblock}{}
+    Terminologies which lack semantic connectivity hamper the effective search
+    in biomedical fact databases and document retrieval systems. We here focus
+    on the integration of two such isolated resources, the term lists from the
+    protein fact database UNIPROT and the indexing vocabulary MESH from the
+    bibliographic database MEDLINE.
+  \end{exampleblock}
 
-  \begin{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Example -- Sentences}
+
+  \REST{GET /annotate/bluima.sentence?text=<\ldots>}
+
+  \vspace{1em}
+
+  \begin{lstjson}
 "DocumentAnnotation" : [
   { "begin" : 0,    "end" : 328,  "language" : "en" }
 ],
@@ -180,15 +182,11 @@
     "componentId" :
         "de.julielab.types.OpenNLPSentenceDetector" }
 ]
-  \end{lstlisting}
+  \end{lstjson}
 
 \end{frame}
 
-\begin{frame}{And now for a}
-  \begin{center}
-    \Huge Demo!
-  \end{center}
-\end{frame}
+\plain{\Huge Demo!}
 
 \begin{frame}{Thank you!}
   \begin{center}
