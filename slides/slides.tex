@@ -1,0 +1,204 @@
+\documentclass[xcolor={usenames,dvipsnames}]{beamer}
+\usepackage[utf8x]{inputenc}
+
+\mode<presentation>
+{
+  \usetheme{Singapore}
+  \usecolortheme{rose}
+  %\setbeamercovered{transparent}
+  \setbeamercovered{invisible}
+  \setbeamercolor*{alerted text}{parent=titlelike}
+}
+\renewcommand{\emph}[1]{\alert{#1}}
+
+
+%%% Packages %%%
+
+% Use T1 and a modern font family for better support of accents, etc.
+\usepackage[T1]{fontenc}
+\usepackage{palatino}  % Palatino
+
+% Language support
+\usepackage[english]{babel}
+
+% Support for easily changing the enumerator in
+% enumerate-environments.
+\usepackage{enumerate}
+
+% Support for importing images
+%\usepackage{graphicx}
+
+% Use hyperlinks
+\usepackage{hyperref}
+
+% Don't load xcolors package in beamer: use document class option
+% instead...
+%\usepackage[usenames,dvipsnames]{xcolor}
+
+% Use colors in tables
+%\usepackage[pdftex]{colortbl}
+
+% A nice monospace font for listings, etc.
+\usepackage[scaled]{beramono}
+%\usepackage{inconsolata}
+
+% Using TikZ for diagrams
+\usepackage{tikz}
+\usetikzlibrary{arrows,fit,matrix,positioning,decorations.pathreplacing}
+\usepackage{tikz-cd} % for CM-arrow tips.
+
+% Don't use externalize with gradients!!!
+%\usetikzlibrary{external,arrows,fit,matrix,positioning}
+%\tikzexternalize % Activate externalizing TikZ graphics.
+
+
+%%% JSON LISTING
+
+\usepackage{listings}
+
+\colorlet{JSONPUNCTCOLOR}{red!60!black}
+\definecolor{JSONBACKGROUNDCOLOR}{HTML}{EEEEEE}
+\definecolor{JSONDELIMCOLOR}{RGB}{20,105,176}
+\colorlet{JSONNUMBERCOLOR}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    captionpos=b,
+    basicstyle=\normalfont\ttfamily\small,
+    %numbers=left,
+    %numberstyle=\scriptsize,
+    %stepnumber=1,
+    %numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{JSONBACKGROUNDCOLOR},
+    literate=
+     *{0}{{{\color{JSONNUMBERCOLOR}0}}}{1}
+      {1}{{{\color{JSONNUMBERCOLOR}1}}}{1}
+      {2}{{{\color{JSONNUMBERCOLOR}2}}}{1}
+      {3}{{{\color{JSONNUMBERCOLOR}3}}}{1}
+      {4}{{{\color{JSONNUMBERCOLOR}4}}}{1}
+      {5}{{{\color{JSONNUMBERCOLOR}5}}}{1}
+      {6}{{{\color{JSONNUMBERCOLOR}6}}}{1}
+      {7}{{{\color{JSONNUMBERCOLOR}7}}}{1}
+      {8}{{{\color{JSONNUMBERCOLOR}8}}}{1}
+      {9}{{{\color{JSONNUMBERCOLOR}9}}}{1}
+      {:}{{{\color{JSONPUNCTCOLOR}{:}}}}{1}
+      {,}{{{\color{JSONPUNCTCOLOR}{,}}}}{1}
+      {\{}{{{\color{JSONDELIMCOLOR}{\{}}}}{1}
+      {\}}{{{\color{JSONDELIMCOLOR}{\}}}}}{1}
+      {[}{{{\color{JSONDELIMCOLOR}{[}}}}{1}
+      {]}{{{\color{JSONDELIMCOLOR}{]}}}}{1},
+}
+\lstnewenvironment{lstjson}{\lstset{language=json}}{}
+
+%%%% Custom macros %%%%
+\newif\ifcompileTreeSlides
+%\compileTreeSlidesfalse
+\compileTreeSlidestrue
+
+%%% Document info %%%
+
+\title{Large-scale Information Extraction from Neuroscientific Literature}
+
+\author{Marco Antognini}
+
+% To show the TOC at the beginning of each section, uncomment this:
+% \AtBeginSection[]
+% {
+%   \begin{frame}<beamer>{Outline}
+%     \tableofcontents[currentsection]
+%   \end{frame}
+% }
+
+% To show the TOC at the beginning of each subsection, uncomment this:
+% \AtBeginSubsection[]
+% {
+%   \begin{frame}<beamer>{Outline}
+%     \tableofcontents[currentsection,currentsubsection]
+%   \end{frame}
+% }
+
+
+% To uncover everything in a step-wise fashion, uncomment this:
+% \beamerdefaultoverlayspecification{<+->}
+
+\setbeamertemplate{footline}[frame number]
+
+\date{%
+  \vspace{-1em}
+  \small Spring 2015\\[2em]
+  \includegraphics[height=7mm]{img/epfl-logo}}
+
+
+%%% Start of the actual document %%%
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Short-cut for inline listings using "@" (must come after "\titlepage")
+\lstMakeShortInline[%
+  language=json,%
+  flexiblecolumns=false,%
+  mathescape=false,%
+  basicstyle=\color{blue!30!darkgray}\tt]@
+
+
+% No outline, too short a talk...
+% \begin{frame}{Outline}
+%   \tableofcontents
+%   % You might wish to add the option [pausesections]
+% \end{frame}
+
+% No sections or subsections, too short a talk...
+% \section{Motivation}
+% \subsection*{}
+
+% TODO
+\begin{frame}[fragile]{Motivation}
+  Some text
+\end{frame}
+
+\begin{frame}[fragile]{Example -- Lists}
+
+  \begin{verbatim}
+    \REST{GET /annotate/bluima.sentence?text=<\ldots>
+  \end{verbatim}
+
+  \begin{lstlisting}
+"DocumentAnnotation" : [
+  { "begin" : 0,    "end" : 328,  "language" : "en" }
+],
+"Sentence" : [
+  { "begin" : 0,    "end" : 135,
+    "componentId" :
+        "de.julielab.types.OpenNLPSentenceDetector" },
+  { "begin" : 136,  "end" : 32
+    "componentId" :
+        "de.julielab.types.OpenNLPSentenceDetector" }
+]
+  \end{lstlisting}
+
+\end{frame}
+
+\begin{frame}{And now for a}
+  \begin{center}
+    \Huge Demo!
+  \end{center}
+\end{frame}
+
+\begin{frame}{Thank you!}
+  \begin{center}
+    \Huge Questions?
+  \end{center}
+  \vspace{2em}
+  \begin{center}
+    \emph{Check it out}\vspace{.5em}\\
+    \url{http://sherlok.io}\\
+  \end{center}
+\end{frame}
+
+\end{document}
