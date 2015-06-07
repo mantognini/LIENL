@@ -48,6 +48,17 @@
 %\usetikzlibrary{external,arrows,fit,matrix,positioning}
 %\tikzexternalize % Activate externalizing TikZ graphics.
 
+% Quotes
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{myquote}[1][]{%
+  blanker, oversize,%
+  left=5pt, %top=1pt, bottom=1pt,%
+  borderline west={2pt}{0pt}{mLightBrown},%
+  before upper=\indent,%
+  parbox=false,%
+  #1}
+
 
 %%% JSON LISTING
 
@@ -67,7 +78,7 @@
     %numbersep=8pt,
     showstringspaces=false,
     breaklines=true,
-    frame=single,
+    frame=none,
     backgroundcolor=\color{JSONBACKGROUNDCOLOR},
     literate=
      *{0}{{{\color{JSONNUMBERCOLOR}0}}}{1}
@@ -154,13 +165,13 @@
 
 \begin{frame}[fragile]{Example -- Sentences}
 
-  \begin{exampleblock}{}
+  \begin{myquote}
     Terminologies which lack semantic connectivity hamper the effective search
     in biomedical fact databases and document retrieval systems. We here focus
     on the integration of two such isolated resources, the term lists from the
     protein fact database UNIPROT and the indexing vocabulary MESH from the
     bibliographic database MEDLINE.
-  \end{exampleblock}
+  \end{myquote}
 
 \end{frame}
 
