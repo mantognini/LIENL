@@ -48,6 +48,9 @@
 %\usetikzlibrary{external,arrows,fit,matrix,positioning}
 %\tikzexternalize % Activate externalizing TikZ graphics.
 
+\usepackage{pifont} % for ding
+\usepackage[inline]{enumitem}
+
 % Quotes
 \usepackage[most]{tcolorbox}
 
@@ -99,6 +102,12 @@
       {]}{{{\color{JSONDELIMCOLOR}{]}}}}{1},
 }
 \lstnewenvironment{lstjson}{\lstset{language=json}}{}
+
+%%% JAVA LISTING
+
+% TODO add colors
+\lstnewenvironment{lstjava}{\lstset{language=java, basicstyle=\small}}{}
+
 
 %%%% Custom macros %%%%
 \newif\ifcompileTreeSlides
@@ -160,7 +169,76 @@
 % \subsection*{}
 
 \begin{frame}[fragile]{Motivation}
-  TODO
+  \begin{myquote}
+    The ultimate goal of the \emph{Blue Brain Project} is to reverse engineer
+    the mammalian brain.
+  \end{myquote}
+
+  %\vspace{1em}
+  \pause
+
+  \begin{itemize}[label=\ding{228}]
+
+    \item Interactions between brain regions?
+
+    \item What about effects of specific cells?
+
+    \item And connections with other organs?
+
+    \item \ldots and many many more questions.
+
+  \end{itemize}
+
+  %\vspace{1em}
+
+  The neuroscientific \emph{literature} already holds many answers but\ldots
+
+  %\vspace{1em}
+  \pause
+
+  % TODO put this on a new slide.
+  $\Longrightarrow$ \ldots we need a tool to \emph{extract specific information}
+  from this colossal amount of text.
+
+\end{frame}
+
+\begin{frame}[fragile]{bluima}
+  UIMA: engines producing \emph{annotations}, usu. implemented in Java.
+
+  bluima focus on neuroscientific engines:
+
+  % TODO list of major tools
+  % It includes for example a species engine based on the Linnaeus library [19],
+  % or the OpenNLP toolkit [17] to perform PoS tagging, sentence splitting and
+  % more. + full brain regions NER and co-occurrences
+
+  % TODO what is an annotation?
+  % TODO example: brain regions
+
+  % TODO what is a pipeline?
+  % TODO on a new slide
+  \begin{lstjava}[language=java]
+JCas jCas = UimaTests.getTestCas(text);
+runPipeline(
+  jCas,
+  createEngineDescription(
+    SentenceAnnotator.class,
+    "modelFile",
+    "SentDetectPennBio.bin.gz"
+  )
+  // TODO add Token+PoS
+);
+Collection<Sentence> collection =
+  JCasUtil.select(jCas, Sentence.class);
+  \end{lstjava}
+
+  % TODO But Java is not the best tool for every task
+  % TODO present RUTA + Dog example
+  % TODO Can invoke engines! + PoS pipeline example
+  % TODO missing Engine's configuration -> external XML
+  % TODO and not trivial to run (?)
+  % TODO What about a RESTful service that everybody can use easily?
+  % TODO -> Sherlok!!
 \end{frame}
 
 \begin{frame}[fragile]{Example -- Sentences}
@@ -175,7 +253,7 @@
 
 \end{frame}
 
-\begin{frame}[fragile]{Example -- Sentences}
+\begin{frame}[fragile]{Example -- Sentences (cont.)}
 
   \REST{GET /annotate/bluima.sentence?text=<\ldots>}
 
