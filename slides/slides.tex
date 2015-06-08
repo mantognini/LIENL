@@ -6,9 +6,6 @@
 %%% Theme and style
 \usetheme{m}
 
-\renewcommand{\emph}[1]{\alert{#1}}
-
-
 %%% Packages %%%
 
 % Use T1 and a modern font family for better support of accents, etc.
@@ -108,6 +105,23 @@
 % TODO add colors
 \lstnewenvironment{lstjava}{\lstset{language=java, basicstyle=\small}}{}
 
+%%% RUTA LISTING
+
+\definecolor{RUTABACKGROUNDCOLOR}{HTML}{EEEEEE}
+
+\lstdefinelanguage{ruta}{
+    captionpos=b,
+    basicstyle=\normalfont\ttfamily\small,
+    %numbers=left,
+    %numberstyle=\scriptsize,
+    %stepnumber=1,
+    %numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{RUTABACKGROUNDCOLOR},
+}
+\lstnewenvironment{lstruta}{\lstset{language=ruta}}{}
 
 %%%% Custom macros %%%%
 \newif\ifcompileTreeSlides
@@ -115,6 +129,13 @@
 \compileTreeSlidestrue
 
 \newcommand{\REST}[1]{{\color{NavyBlue}\ttfamily{#1}}}
+\newcommand{\SHELL}[1]{\lstinline[language=bash]!#1!}
+\newcommand{\ID}[1]{{\textsc{#1}}}
+\newcommand{\SmallArrow}{\ding{228}}
+\newcommand{\BigArrow}{$\Longrightarrow$} % TODO find nicer arrow
+\newcommand{\hence}{\implies}
+\renewcommand{\emph}[1]{\alert{#1}}
+\newcommand{\light}{\color{TealBlue}}
 
 
 %%% Document info %%%
@@ -164,11 +185,8 @@
 %   % You might wish to add the option [pausesections]
 % \end{frame}
 
-% No sections or subsections, too short a talk...
-% \section{Motivation}
-% \subsection*{}
-
 \begin{frame}[fragile]{Motivation}
+
   \begin{myquote}
     The ultimate goal of the \emph{Blue Brain Project} is to reverse engineer
     the mammalian brain.
@@ -177,7 +195,7 @@
   %\vspace{1em}
   \pause
 
-  \begin{itemize}[label=\ding{228}]
+  \begin{itemize}[label=\SmallArrow]
 
     \item Interactions between brain regions?
 
@@ -197,51 +215,51 @@
   \pause
 
   % TODO put this on a new slide.
-  $\Longrightarrow$ \ldots we need a tool to \emph{extract specific information}
+  \BigArrow \ldots we need a tool to \emph{extract specific information}
   from this colossal amount of text.
 
 \end{frame}
 
-\begin{frame}[fragile]{bluima}
-  UIMA: engines producing \emph{annotations}, usu. implemented in Java.
+\section{UIMA \& RUTA: in brief}
 
-  bluima focus on neuroscientific engines:
+%\begin{frame}[fragile]{Existing Technologies}
 
-  % TODO list of major tools
-  % It includes for example a species engine based on the Linnaeus library [19],
-  % or the OpenNLP toolkit [17] to perform PoS tagging, sentence splitting and
-  % more. + full brain regions NER and co-occurrences
+  %\Large
 
-  % TODO what is an annotation?
-  % TODO example: brain regions
+  %\begin{itemize}[label=\textcolor{mLightBrown}{\SmallArrow}, itemsep=4em]
 
-  % TODO what is a pipeline?
-  % TODO on a new slide
-  \begin{lstjava}[language=java]
-JCas jCas = UimaTests.getTestCas(text);
-runPipeline(
-  jCas,
-  createEngineDescription(
-    SentenceAnnotator.class,
-    "modelFile",
-    "SentDetectPennBio.bin.gz"
-  )
-  // TODO add Token+PoS
-);
-Collection<Sentence> collection =
-  JCasUtil.select(jCas, Sentence.class);
-  \end{lstjava}
+    %\item UIMA engines
+      %\pause
 
-  % TODO But Java is not the best tool for every task
-  % TODO present RUTA + Dog example
-  % TODO Can invoke engines! + PoS pipeline example
-  % TODO missing Engine's configuration -> external XML
-  % TODO and not trivial to run (?)
-  % TODO What about a RESTful service that everybody can use easily?
-  % TODO -> Sherlok!!
+    %\item RUTA scripting language
+
+  %\end{itemize}
+
+%\end{frame}
+
+\begin{frame}[fragile]{UIMA}
+
+  \begin{itemize}[label=\SmallArrow, itemsep=1em]
+
+    \item Unstructured Information Management Architecture
+
+    \item \emph{Engines} produce \emph{annotations} (metadata)
+
+    \item Engines are combined to form \emph{pipelines}
+
+    \item Most engines are written in Java
+
+    \item Not limited to neuroscience topics
+
+  \end{itemize}
+
 \end{frame}
 
-\begin{frame}[fragile]{Example -- Sentences}
+\begin{frame}[fragile]{UIMA -- Sentence}
+
+  Assuming we want to find all sentences in this text\ldots
+
+  \vspace{1em}
 
   \begin{myquote}
     Terminologies which lack semantic connectivity hamper the effective search
@@ -253,9 +271,36 @@ Collection<Sentence> collection =
 
 \end{frame}
 
-\begin{frame}[fragile]{Example -- Sentences (cont.)}
+\begin{frame}[fragile]{UIMA -- Sentence Pipeline}
 
-  \REST{GET /annotate/bluima.sentence?text=<\ldots>}
+  % NOTE: explain what CAS are.
+  % NOTE: mention quickly resources.
+
+  \begin{lstjava}[language=java]
+JCas jCas = UimaTests.getTestCas(text);
+runPipeline(
+  jCas,
+  createEngineDescription(
+    SentenceAnnotator.class,
+    "modelFile", "SentDetectPennBio.bin.gz"
+  )
+  // more engines can come here if needed
+);
+Collection<Sentence> sentences =
+  JCasUtil.select(jCas, Sentence.class);
+  \end{lstjava}
+
+  \pause
+
+  \BigArrow Need to understand Java to write new pipeline even if engines
+  already exist!
+  % NOTE Also Java is not the best tool for every task
+
+\end{frame}
+
+\begin{frame}[fragile]{UIMA -- Metadata}
+
+  The resulting annotations, presented in JSON format:
 
   \vspace{1em}
 
@@ -275,7 +320,225 @@ Collection<Sentence> collection =
 
 \end{frame}
 
+\begin{frame}[fragile]{bluima}
+  bluima regroups UIMA engines, focusing on neuroscientific engines:
+
+  % TODO list of major tools
+  % It includes for example a species engine based on the Linnaeus library [19],
+  % or the OpenNLP toolkit [17] to perform PoS tagging, sentence splitting and
+  % more. + full brain regions NER and co-occurrences
+
+\end{frame}
+
+\begin{frame}[fragile]{RUTA}
+
+  \begin{itemize}[label=\SmallArrow, itemsep=1em]
+
+    \item Rule-based Text Annotation
+
+    \item Scripting language
+
+    \item Can \emph{integrate engine} in script
+
+    \item Makes it a bit easier to write UIMA pipeline
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{RUTA -- Simple Script}
+
+  Basic RUTA script tagging dogs as \ID{Animal}:
+
+  \vspace{1em}
+
+  \begin{lstruta}
+DECLARE Animal;
+W{REGEXP("dog") -> MARK(Animal)};
+  \end{lstruta}
+
+\end{frame}
+
+\begin{frame}[fragile]{RUTA -- Part of Speech Pipeline}
+
+  Integration of UIMA engines:
+
+  \vspace{1em}
+
+  \begin{lstruta}
+ENGINE SentenceAnnotator;
+ENGINE TokenAnnotator;
+ENGINE PosTagAnnotator;
+
+Document{-> EXEC(SentenceAnnotator)};
+Document{-> EXEC(TokenAnnotator)};
+Document{-> EXEC(PosTagAnnotator)};
+  \end{lstruta}
+
+  \pause
+
+  \emph{BUT} the engines' settings are stored in an unfriendly XML file\ldots
+
+\end{frame}
+
+\begin{frame}[fragile]{Issues}
+
+  With both raw UIMA and RUTA scripts, some additional issues:
+
+  \vspace{1em}
+
+  \begin{itemize}[label=\SmallArrow, itemsep=1em]
+
+    \item Every user has to go through the hassle of installing UIMA/RUTA
+      % tools
+
+    \item Not so trivial to run pipelines
+
+    \item Manage \emph{external resources} (install, update, remove, \ldots)
+
+    \item Manage versions of engines \& pipelines
+
+  \end{itemize}
+
+\end{frame}
+
+\section{Sherlok}
+
+\begin{frame}[fragile]{Sherlok -- Text-Mining Service}
+
+  In a few words:
+
+  \begin{itemize}[label=\SmallArrow, itemsep=1em]
+
+    \item \emph{RESTful} service: 1 server for many users
+
+    \item Based on UIMA $\hence$ existing engines compatible
+      \only<2->{{\light(almost)}}
+
+    \item Based on RUTA $\hence$ allowing powerful scripts
+
+    \item Makes it easy to \emph{configure} engines and pipelines
+
+    \item \emph{Automatic resource} installation
+
+  \end{itemize}
+
+  \pause
+
+  Sometimes, the Java implementation need some {\light minor} refactoring.
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- RESTful}
+
+  What does it mean?
+
+  \vspace{1em}
+
+  Basically, the \emph{HTTP} protocol is all is needed to communicate with Sherlok.
+
+  \vspace{1em}
+  \pause
+
+  \BigArrow Can easily be embedded in any programming language or tool!
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- REST query example}
+
+  To annotate some text with the sentence pipeline:
+
+  \REST{GET /annotate/bluima.sentence?text=<\ldots>}
+
+  \pause
+
+  \vspace{2em}
+  \SHELL{\$ curl -X GET http://localhost:9600/annotate/bluima.sentence?text=<...>}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- Metadata (as before)}
+
+  The resulting annotations, presented in JSON format:
+
+  \vspace{1em}
+
+  \begin{lstjson}
+"DocumentAnnotation" : [
+  { "begin" : 0,    "end" : 328,  "language" : "en" }
+],
+"Sentence" : [
+  { "begin" : 0,    "end" : 135,
+    "componentId" :
+        "de.julielab.types.OpenNLPSentenceDetector" },
+  { "begin" : 136,  "end" : 32
+    "componentId" :
+        "de.julielab.types.OpenNLPSentenceDetector" }
+]
+  \end{lstjson}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- Part of Speech Pipeline}
+
+  \begin{center}
+    \vspace{-1em}
+    \includegraphics[width=\textwidth, height=0.8\textheight, keepaspectratio]
+      {../report/res/sherlok_basic_rest_call.png}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- Engine Configuration}
+
+  \vspace{-1.5em}
+
+  \begin{lstjson}
+{
+  "name": "bluima.sentence", "version": "1.0.1",
+  "dependencies": [
+    { "value": "ch.epfl.bbp.nlp:bluima_opennlp:1.0.1" }
+  ], "config": {
+    "bluima": {
+      "type": "git", "ref": "master",
+      "url":
+        "https://github.com/BlueBrain/bluima_resources.git" }
+  }, "engines": [ {
+      "name": "SentenceAnnotator",
+      "class": "ch.epfl.bbp.uima.ae.SentenceAnnotator",
+      "parameters": {
+        "modelFile":
+          "$bluima/opennlp/sentence/SentDetectGenia.bin.gz"
+      }
+  } ]
+}
+  \end{lstjson}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- Pipeline Configuration}
+
+  \begin{lstjson}
+{
+  "name": "countries", "version": "1",
+  "description": "Example that annotates countries",
+  "config": {
+    "countries": {
+      "type": "http", "mode": "ruta",
+      "url": "https://example.com/countries.txt"
+    }
+  }, "script": [
+    "WORDLIST CountriesList = '$countries';",
+    "DECLARE Country;",
+    "Document{-> MARKFAST(Country, CountriesList)};"
+  ]
+}
+  \end{lstjson}
+
+\end{frame}
+
 \plain{\Huge Demo!}
+% NOTE: HTML demo with Brain Regions
 
 \begin{frame}{Thank you!}
   \begin{center}
@@ -283,8 +546,8 @@ Collection<Sentence> collection =
   \end{center}
   \vspace{2em}
   \begin{center}
-    \emph{Check it out}\vspace{.5em}\\
-    \url{http://sherlok.io}\\
+    Check it out\vspace{.5em}\\
+    {\light\url{http://sherlok.io}}
   \end{center}
 \end{frame}
 
