@@ -271,32 +271,33 @@
 
 \end{frame}
 
-\begin{frame}[fragile]{UIMA -- Sentence Pipeline}
+% TODO: probably not enough time for that...
+%\begin{frame}[fragile]{UIMA -- Sentence Pipeline}
+%
+%  % NOTE: explain what CAS are.
+%  % NOTE: mention quickly resources.
+%
+%  \begin{lstjava}[language=java]
+%JCas jCas = UimaTests.getTestCas(text);
+%runPipeline(
+%  jCas,
+%  createEngineDescription(
+%    SentenceAnnotator.class,
+%    "modelFile", "SentDetectPennBio.bin.gz"
+%  )
+%  // more engines can come here if needed
+%);
+%Collection<Sentence> sentences =
+%  JCasUtil.select(jCas, Sentence.class);
+%  \end{lstjava}
+%
+%  \pause
+%
+%  \BigArrow Need to understand Java to write new pipeline even if engines
+%  already exist!
+%  % NOTE Also Java is not the best tool for every task
 
-  % NOTE: explain what CAS are.
-  % NOTE: mention quickly resources.
-
-  \begin{lstjava}[language=java]
-JCas jCas = UimaTests.getTestCas(text);
-runPipeline(
-  jCas,
-  createEngineDescription(
-    SentenceAnnotator.class,
-    "modelFile", "SentDetectPennBio.bin.gz"
-  )
-  // more engines can come here if needed
-);
-Collection<Sentence> sentences =
-  JCasUtil.select(jCas, Sentence.class);
-  \end{lstjava}
-
-  \pause
-
-  \BigArrow Need to understand Java to write new pipeline even if engines
-  already exist!
-  % NOTE Also Java is not the best tool for every task
-
-\end{frame}
+%\end{frame}
 
 \begin{frame}[fragile]{UIMA -- Metadata}
 
@@ -323,10 +324,17 @@ Collection<Sentence> sentences =
 \begin{frame}[fragile]{bluima}
   bluima regroups UIMA engines, focusing on neuroscientific engines:
 
-  % TODO list of major tools
-  % It includes for example a species engine based on the Linnaeus library [19],
-  % or the OpenNLP toolkit [17] to perform PoS tagging, sentence splitting and
-  % more. + full brain regions NER and co-occurrences
+  \begin{itemize}[label=\SmallArrow]
+
+    \item OpenNLP (sentence, tokenizer, PoS, \ldots)
+
+    \item Linnaeus (species recognition)
+
+    \item Oscar (chemistry)
+
+    \item \emph{Brain regions \& their relations}
+
+  \end{itemize}
 
 \end{frame}
 
