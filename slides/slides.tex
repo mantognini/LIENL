@@ -81,6 +81,7 @@
     breaklines=true,
     frame=none,
     backgroundcolor=\color{JSONBACKGROUNDCOLOR},
+    moredelim=**[is][\color{mLightBrown}]{@}{@},
     literate=
      *{0}{{{\color{JSONNUMBERCOLOR}0}}}{1}
       {1}{{{\color{JSONNUMBERCOLOR}1}}}{1}
@@ -464,7 +465,7 @@ Document{-> EXEC(PosTagAnnotator)};
 
   \vspace{1em}
 
-  \BigArrow Can easily be embedded in any programming language or tool!
+  \BigArrow \quad Can easily be embedded in any programming language or tool!
 
   \pause
   {\color{mLightBrown}\hrulefill}
@@ -607,9 +608,9 @@ Document{-> EXEC(PosTagAnnotator)};
   "name": "bluima.sentence", "version": "1.0.1",
   "dependencies": [
     { "value": "ch.epfl.bbp.nlp:bluima_opennlp:1.0.1" }
-  ], "config": {
+  ], @"config"@: {
     "bluima": {
-      "type": "git", "ref": "master",
+      "type": @"git"@, "ref": "master",
       "url":
         "https://github.com/BlueBrain/bluima_resources.git" }
   }, "engines": [ {
@@ -617,7 +618,7 @@ Document{-> EXEC(PosTagAnnotator)};
       "class": "ch.epfl.bbp.uima.ae.SentenceAnnotator",
       "parameters": {
         "modelFile":
-          "$bluima/opennlp/sentence/SentDetectGenia.bin.gz"
+          "@$bluima@/opennlp/sentence/SentDetectGenia.bin.gz"
       }
   } ]
 }
@@ -631,13 +632,13 @@ Document{-> EXEC(PosTagAnnotator)};
 {
   "name": "countries", "version": "1",
   "description": "Example that annotates countries",
-  "config": {
+  @"config"@: {
     "countries": {
-      "type": "http", "mode": "ruta",
+      "type": @"http"@, "mode": "ruta",
       "url": "https://example.com/countries.txt"
     }
   }, "script": [
-    "WORDLIST CountriesList = '$countries';",
+    "WORDLIST CountriesList = '@$countries@';",
     "DECLARE Country;",
     "Document{-> MARKFAST(Country, CountriesList)};"
   ]
