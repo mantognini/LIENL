@@ -38,7 +38,7 @@
 
 % Using TikZ for diagrams
 \usepackage{tikz}
-\usetikzlibrary{arrows,fit,matrix,positioning,decorations.pathreplacing}
+\usetikzlibrary{shapes}
 \usepackage{tikz-cd} % for CM-arrow tips.
 
 % Don't use externalize with gradients!!!
@@ -454,7 +454,6 @@ Document{-> EXEC(PosTagAnnotator)};
   Basically, the \emph{HTTP} protocol is all is needed to communicate with Sherlok.
 
   \vspace{1em}
-  \pause
 
   \BigArrow Can easily be embedded in any programming language or tool!
 
@@ -474,6 +473,72 @@ Document{-> EXEC(PosTagAnnotator)};
     \includegraphics[width=\textwidth, height=0.8\textheight, keepaspectratio]
       {../report/res/sherlok_basic_rest_call.png}
   \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- Running A Pipeline}
+
+  \vspace{-2em}
+
+  \begin{tikzpicture}
+    [auto,
+     decision/.style={diamond, draw=MidnightBlue, thick, fill=MidnightBlue!20,
+                      text width=4.5em, text badly centered,
+                      inner sep=1pt},
+     action/.style  ={rectangle, draw=black, thick, fill=RoyalBlue!60,
+                      text width=5em, text centered, rounded corners,
+                      minimum height=4em},
+     line/.style    ={draw, thick, ->},
+     net/.style     ={draw=JungleGreen, thick, cloud, cloud puffs=9.3,
+                      cloud ignores aspect, fill=JungleGreen!20,
+                      text width=3em, minimum height=3em},
+     actor/.style   ={draw=LimeGreen, thick, circle,fill=LimeGreen!20,
+                      minimum height=4em}]
+
+    % Elements
+    \matrix [column sep=8mm, row sep=8mm]
+    {
+      % row 1
+      \node [action]      (start)   {start pipeline};     &
+      \node [decision]    (cache)   {in cache?};          &
+      \node [action]      (jars)    {download jars};      &
+      \node [net]         (central) {Internet};           \\
+      % row 2
+      \node [actor]       (user)    {user};               &
+      &
+      \node [action]      (res)     {download resources}; &
+      \node [net]         (web)     {Internet};           \\
+      % row 3
+      \node [action]      (send)    {send metadata};      &
+      \node [action]      (run)     {run RUTA};           &
+      \node [action]      (xml)     {generate XML \& RUTA};&
+      &                                                   \\
+    };
+
+    % Connections
+    \begin{scope}[every path/.style=line]
+      \path[dashed](user)   --    (start);
+      \path       (start)   --    (cache);
+      \path       (cache)   --    node [midway] {yes} (run);
+      \path       (cache)   --    node [midway] {no} (jars);
+      \path[<->]  (jars)    --    (central);
+      \path       (jars)    --    (res);
+      \path[<->]  (res)     --    (web);
+      \path       (res)     --    (xml);
+      \path       (xml)     --    (run);
+      \path       (run)     --    (send);
+      \path[dashed,->|](send)   --    (user);
+    \end{scope}
+
+    % Background rectangle for res + web
+    \begin{scope}[on background layer]
+    \path[draw=mLightBrown, thick, fill=mLightBrown!10]
+      ([xshift=-1em, yshift=1em] res.north west)
+      rectangle
+      ([xshift=2em, yshift=-1em] res.south west -| web.south east);
+    \end{scope}
+
+  \end{tikzpicture}
 
 \end{frame}
 
