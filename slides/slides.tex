@@ -326,13 +326,19 @@
 
   \begin{itemize}[label=\SmallArrow]
 
-    \item OpenNLP (sentence, tokenizer, PoS, \ldots)
+    \item Preprocessing (sentence, tokenizer, PoS, \ldots)
 
     \item Linnaeus (species recognition)
 
     \item Oscar (chemistry)
 
     \item \emph{Brain regions \& their relations}
+
+    \item Proteins
+
+    \item Measures and units
+
+    \item \ldots
 
   \end{itemize}
 
@@ -427,13 +433,15 @@ Document{-> EXEC(PosTagAnnotator)};
 
     \item Makes it easy to \emph{configure} engines and pipelines
 
-    \item \emph{Automatic resource} installation
+    \item \emph{Automatic resource} management
+
+    \item \emph{Versioning} of pipelines
 
   \end{itemize}
 
   \pause
 
-  Sometimes, the Java implementation need some {\light minor} refactoring.
+  Sometimes, the Java implementation needs some {\light minor} refactoring.
 
 \end{frame}
 
@@ -450,40 +458,12 @@ Document{-> EXEC(PosTagAnnotator)};
 
   \BigArrow Can easily be embedded in any programming language or tool!
 
-\end{frame}
-
-\begin{frame}[fragile]{Sherlok -- REST query example}
+  \pause
+  {\color{mLightBrown}\hrulefill}
 
   To annotate some text with the sentence pipeline:
 
   \REST{GET /annotate/bluima.sentence?text=<\ldots>}
-
-  \pause
-
-  \vspace{2em}
-  \SHELL{\$ curl -X GET http://localhost:9600/annotate/bluima.sentence?text=<...>}
-
-\end{frame}
-
-\begin{frame}[fragile]{Sherlok -- Metadata (as before)}
-
-  The resulting annotations, presented in JSON format:
-
-  \vspace{1em}
-
-  \begin{lstjson}
-"DocumentAnnotation" : [
-  { "begin" : 0,    "end" : 328,  "language" : "en" }
-],
-"Sentence" : [
-  { "begin" : 0,    "end" : 135,
-    "componentId" :
-        "de.julielab.types.OpenNLPSentenceDetector" },
-  { "begin" : 136,  "end" : 32
-    "componentId" :
-        "de.julielab.types.OpenNLPSentenceDetector" }
-]
-  \end{lstjson}
 
 \end{frame}
 
