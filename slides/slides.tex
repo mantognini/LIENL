@@ -39,6 +39,7 @@
 % Using TikZ for diagrams
 \usepackage{tikz}
 \usetikzlibrary{shapes,mindmap}
+%\usetikzlibrary{er,mindmap,calc,intersections,shapes,arrows,fit,matrix,positioning,decorations.pathmorphing,topaths,trees,automata}
 \usepackage{tikz-cd} % for CM-arrow tips.
 
 % Don't use externalize with gradients!!!
@@ -560,6 +561,40 @@ Document{-> EXEC(PosTagAnnotator)};
     }
 
   \end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}[fragile]{Sherlok -- Kinds of Remote Resource}
+
+  \vspace{-1em}
+
+  \begin{center}
+
+  \begin{tikzpicture}
+    [auto,
+      root concept/.style={concept color=RoyalBlue!60, text=white,
+                           minimum size=5em, text width=7em,
+                           level distance=2em},
+      level 1 concept/.append style={concept, minimum size=2em, text width=4em,
+                                     level distance=10em},
+      implemented/.style={concept color=RoyalBlue!80},
+      todo/.style={concept color=RoyalBlue!40},
+    ]
+
+    \path[mindmap]
+      node[concept] {Resources}
+        [clockwise from=120]
+        child { node[concept, implemented] {HTTP} }
+        child { node[concept, implemented] {Git} }
+        child { node[concept, implemented] {File System} }
+        child { node[concept, todo] {SSH} }
+        child { node[concept, todo] {\ldots} }
+        child { node[concept, todo] {Archive} }
+      ;
+
+  \end{tikzpicture}
+
+  \end{center}
 
 \end{frame}
 
