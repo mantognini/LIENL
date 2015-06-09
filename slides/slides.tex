@@ -38,7 +38,7 @@
 
 % Using TikZ for diagrams
 \usepackage{tikz}
-\usetikzlibrary{shapes}
+\usetikzlibrary{shapes,mindmap}
 \usepackage{tikz-cd} % for CM-arrow tips.
 
 % Don't use externalize with gradients!!!
@@ -137,6 +137,14 @@
 \renewcommand{\emph}[1]{\alert{#1}}
 \newcommand{\light}{\color{TealBlue}}
 
+% http://tex.stackexchange.com/a/56585/77356
+\tikzset{
+  invisible/.style={opacity=0},
+  visible on/.style={alt=#1{}{invisible}},
+  alt/.code args={<#1>#2#3}{%
+    \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+  },
+}
 
 %%% Document info %%%
 
@@ -322,7 +330,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{bluima}
-  bluima regroups UIMA engines, focusing on neuroscientific engines:
+  \emph{Bluima} regroups UIMA engines, focusing on neuroscientific engines:
 
   \begin{itemize}[label=\SmallArrow]
 
@@ -460,9 +468,9 @@ Document{-> EXEC(PosTagAnnotator)};
   \pause
   {\color{mLightBrown}\hrulefill}
 
-  To annotate some text with the sentence pipeline:
+  To annotate some text with the PoS pipeline:
 
-  \REST{GET /annotate/bluima.sentence?text=<\ldots>}
+  \REST{GET /annotate/bluima.pos?text=<\ldots>}
 
 \end{frame}
 
@@ -506,8 +514,10 @@ Document{-> EXEC(PosTagAnnotator)};
       % row 2
       \node [actor]       (user)    {user};               &
       &
-      \node [action]      (res)     {download resources}; &
-      \node [net]         (web)     {Internet};           \\
+      \node [action, visible on=<2>]
+                          (res)     {download resources}; &
+      \node [net, visible on=<2>]
+                          (web)     {Internet};           \\
       % row 3
       \node [action]      (send)    {send metadata};      &
       \node [action]      (run)     {run RUTA};           &
@@ -522,21 +532,32 @@ Document{-> EXEC(PosTagAnnotator)};
       \path       (cache)   --    node [midway] {yes} (run);
       \path       (cache)   --    node [midway] {no} (jars);
       \path[<->]  (jars)    --    (central);
-      \path       (jars)    --    (res);
-      \path[<->]  (res)     --    (web);
-      \path       (res)     --    (xml);
       \path       (xml)     --    (run);
       \path       (run)     --    (send);
       \path[dashed,->|](send)   --    (user);
     \end{scope}
 
-    % Background rectangle for res + web
-    \begin{scope}[on background layer]
-    \path[draw=mLightBrown, thick, fill=mLightBrown!10]
-      ([xshift=-1em, yshift=1em] res.north west)
-      rectangle
-      ([xshift=2em, yshift=-1em] res.south west -| web.south east);
-    \end{scope}
+    \only<1>{
+      \path[line]   (jars)    --    (xml);
+    }
+
+    \only<2>{
+
+      \begin{scope}[every path/.style=line]
+        \path[<->]  (res)     --    (web);
+        \path       (jars)    --    (res);
+        \path       (res)     --    (xml);
+      \end{scope}
+
+      % Background rectangle for res + web
+      \begin{scope}[on background layer]
+        \path[draw=mLightBrown, thick, fill=mLightBrown!10]
+          ([xshift=-1em, yshift=1em] res.north west)
+          rectangle
+          ([xshift=2em, yshift=-1em] res.south west -| web.south east);
+      \end{scope}
+
+    }
 
   \end{tikzpicture}
 
