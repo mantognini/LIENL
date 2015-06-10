@@ -202,9 +202,6 @@
     the mammalian brain.
   \end{myquote}
 
-  %\vspace{1em}
-  \pause
-
   \begin{itemize}[label=\SmallArrow]
 
     \item Interactions between brain regions?
@@ -587,7 +584,7 @@ Document{-> EXEC(PosTagAnnotator)};
         [clockwise from=120]
         child { node[concept, implemented] {HTTP} }
         child { node[concept, implemented] {Git} }
-        child { node[concept, implemented] {File System} }
+        child { node[concept, implemented] {Text} }
         child { node[concept, todo] {SSH} }
         child { node[concept, todo] {\ldots} }
         child { node[concept, todo] {Archive} }
@@ -599,7 +596,7 @@ Document{-> EXEC(PosTagAnnotator)};
 
 \end{frame}
 
-\begin{frame}[fragile]{Sherlok -- Engine Configuration}
+\begin{frame}[fragile]{Sherlok -- Bundle: Engine Configuration}
 
   \vspace{-1.5em}
 
@@ -608,8 +605,8 @@ Document{-> EXEC(PosTagAnnotator)};
   "name": "bluima.sentence", "version": "1.0.1",
   "dependencies": [
     { "value": "ch.epfl.bbp.nlp:bluima_opennlp:1.0.1" }
-  ], @"config"@: {
-    "bluima": {
+  ], "config": {
+    @"bluima"@: {
       "type": @"git"@, "ref": "master",
       "url":
         "https://github.com/BlueBrain/bluima_resources.git" }
@@ -632,8 +629,8 @@ Document{-> EXEC(PosTagAnnotator)};
 {
   "name": "countries", "version": "1",
   "description": "Example that annotates countries",
-  @"config"@: {
-    "countries": {
+  "config": {
+    @"countries"@: {
       "type": @"http"@, "mode": "ruta",
       "url": "https://example.com/countries.txt"
     }
